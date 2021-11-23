@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    implementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'com.github.mauricioaniche:ck:0.6.4'
+    implementation 'org.junit.platform:junit-platform-launcher:1.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+class TestTask extends JavaExec {
+    @Input
+    @Option(option="directory", description="The root directory of the project")
+    String directory
+
+    @Input
+    @Option(option="package", description="The name of the package to test")
+    String packageName
+}
+
+
+task doCustomTest(type: TestTask) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'at.unterhuber.test_runner.Runner'
+    doFirst {
+        args directory, packageName
+    }
+}
+
+doCustomTest.configure {
+    dependsOn assemble
+    dependsOn compileTestJava
+}
