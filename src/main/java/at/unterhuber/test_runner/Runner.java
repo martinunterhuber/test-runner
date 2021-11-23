@@ -10,6 +10,7 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -41,7 +42,8 @@ public class Runner {
         }
 
         TestExecutionSummary summary = listener.getSummary();
-        System.out.println(summary.getTestsStartedCount());
+        summary.printTo(new PrintWriter(System.out));
+        summary.printFailuresTo(new PrintWriter(System.out));
 
 
 //        Map<String, CKClassResult> results = new HashMap<>();
