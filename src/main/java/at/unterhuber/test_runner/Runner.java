@@ -74,5 +74,9 @@ public class Runner {
         TestExecutionSummary summary = listener.getSummary();
         summary.printTo(new PrintWriter(System.out));
         summary.printFailuresTo(new PrintWriter(System.out));
+
+        if (summary.getTestsFailedCount() > 0) {
+            throw new RuntimeException("Failed");
+        }
     }
 }
