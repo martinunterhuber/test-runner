@@ -19,6 +19,7 @@ runs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        path: test-runner
         repository: martinunterhuber/test-runner
         fetch-depth: 0
     - name: Set up JDK 15
@@ -28,12 +29,14 @@ runs:
     - name: Cache Gradle packages
       uses: actions/cache@v1
       with:
-        path: ~/.gradle/caches
+        path: ~/.gradle/caches-runner
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       shell: bash
+      working-directory: ./test-runner
     - name: Execute Test Runner
       run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --package=${{ inputs.package-name }}
       shell: bash
+      working-directory: ./test-runner
