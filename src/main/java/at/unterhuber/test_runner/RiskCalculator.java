@@ -6,10 +6,7 @@ import com.github.mauricioaniche.ck.CKNotifier;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RiskCalculator {
     private final RiskMetric[] metrics;
@@ -47,7 +44,7 @@ public class RiskCalculator {
             for (CKClassResult result : ckMeasurements.values()) {
                 Method method = CKClassResult.class.getMethod("get" + metric.name);
                 int value = (int) method.invoke(result);
-                metricMeasurements.add(new RiskMeasurement(metric, value));
+                metricMeasurements.add(new RiskMeasurement(result.getClassName(), metric, value));
                 if (value > max) {
                     max = value;
                 }
@@ -57,6 +54,19 @@ public class RiskCalculator {
                 measurement.forMaxValue(max);
             }
         }
+    }
+
+    public HashMap<String, Double> getRiskByClass() {
+        HashMap<String, Double> risk = new HashMap<>();
+        for (List<RiskMeasurement> measurements : this.measurements.values()) {
+            for (RiskMeasurement measurement : measurements) {
+                double value = risk.getOrDefault(measurement.getClassName(), 0.0);
+                System.out.println(measurement.getRelativeValue());
+                risk.put(measurement.getClassName(), value + measurement.getRelativeValue() / this.measurements.size());
+            }
+        }
+        System.out.println(Arrays.toString(risk.values().toArray()));
+        return risk;
     }
 
     public void printSelectedMetrics() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
