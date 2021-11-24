@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
@@ -32,15 +33,6 @@ public class Runner {
         ClassLoader cl = new URLClassLoader(urls);
         Thread.currentThread().setContextClassLoader(cl);
         return cl;
-    }
-
-    public static List<DiscoverySelector> selectClasses(FileClassLoader loader) {
-        List<Field> fields = loader.getFields();
-        List<DiscoverySelector> selectors = new ArrayList<>();
-        for (Field field : fields) {
-            selectors.add(selectClass(field.getDeclaringClass()));
-        }
-        return selectors;
     }
 
     public static void executeTests(List<DiscoverySelector> selectors) {
@@ -67,16 +59,37 @@ public class Runner {
         }
     }
 
+    public static List<DiscoverySelector> selectTestClasses(FileClassLoader loader, List<String> classesToTest) {
+        System.out.println(Arrays.toString(classesToTest.toArray()));
+        List<Field> fields = loader.getFields();
+        List<DiscoverySelector> selectors = fields.stream()
+                .filter(field -> classesToTest.contains(field.getType().getCanonicalName()))
+                .map(field -> selectClass(field.getDeclaringClass()))
+                .collect(Collectors.toList());
+        System.out.println(Arrays.toString(selectors.toArray()));
+        return selectors;
+    }
+
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        double threshold = 0.8;
         String path = args[0];
         String packageName = args[1];
         RiskCalculator calc = new RiskCalculator(path, new RiskMetric[]{new RiskMetric("Cbo"), new RiskMetric("NumberOfMethods")});
         calc.measure();
+        calc.initRiskMeasurements();
         calc.printSelectedMetrics();
+        HashMap<String, Double> risk = calc.getRiskByClass();
         ClassLoader cl = initClassLoader(path);
         FileClassLoader loader = new FileClassLoader(path, packageName, cl);
         loader.loadClasses();
-        List<DiscoverySelector> selectors = selectClasses(loader);
+        List<DiscoverySelector> selectors = selectTestClasses(
+                loader,
+                risk.entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue() > threshold)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toList())
+        );
         executeTests(selectors);
     }
 }
