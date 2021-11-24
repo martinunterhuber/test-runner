@@ -6,17 +6,21 @@ import com.github.mauricioaniche.ck.CKNotifier;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RiskCalculator {
     private final RiskMetric[] metrics;
-    private final Map<String, CKClassResult> measurements;
+    private final Map<String, CKClassResult> ckMeasurements;
+    private final Map<String, List<RiskMeasurement>> measurements;
     private final String path;
 
     public RiskCalculator(String path, RiskMetric[] metrics) {
         this.path = path;
         this.metrics = metrics;
+        this.ckMeasurements = new HashMap<>();
         this.measurements = new HashMap<>();
     }
 
@@ -24,7 +28,7 @@ public class RiskCalculator {
         new CK().calculate(path + "src/main/", new CKNotifier() {
             @Override
             public void notify(CKClassResult result) {
-                measurements.put(result.getClassName(), result);
+                ckMeasurements.put(result.getClassName(), result);
             }
 
             @Override
@@ -35,8 +39,28 @@ public class RiskCalculator {
         });
     }
 
+    public void initRiskMeasurements() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        for (RiskMetric metric : metrics) {
+            List<RiskMeasurement> metricMeasurements = new ArrayList<>();
+            measurements.put(metric.name, metricMeasurements);
+            int max = 0;
+            for (CKClassResult result : ckMeasurements.values()) {
+                Method method = CKClassResult.class.getMethod("get" + metric.name);
+                int value = (int) method.invoke(result);
+                metricMeasurements.add(new RiskMeasurement(metric, value));
+                if (value > max) {
+                    max = value;
+                }
+            }
+
+            for (RiskMeasurement measurement : metricMeasurements) {
+                measurement.forMaxValue(max);
+            }
+        }
+    }
+
     public void printSelectedMetrics() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        for(Map.Entry<String, CKClassResult> entry : measurements.entrySet()) {
+        for(Map.Entry<String, CKClassResult> entry : ckMeasurements.entrySet()) {
             for (RiskMetric metric : metrics) {
                 Method method = CKClassResult.class.getMethod("get" + metric.name);
                 System.out.println(entry.getKey() + " - " + metric.name + ": " + method.invoke(entry.getValue()));
