@@ -12,31 +12,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileClassLoader {
-    private final Path rootPath;
-    private final Path testSourcePath;
-    private final Path testClassPath;
-    private final Path mainClassPath;
+    private final ProjectPathHandler pathHandler;
     private ClassLoader classLoader;
     private List<? extends Class<?>> classes;
 
-    public FileClassLoader(String rootPath) {
-        // For now these paths only work for Gradle projects
-        this.rootPath = Path.of(rootPath);
-        this.testSourcePath = this.rootPath.resolve("src/test/java");
-        Path classPath = this.rootPath.resolve("build/classes/java");
-        this.mainClassPath = classPath.resolve("main");
-        this.testClassPath = classPath.resolve("test");
+    public FileClassLoader(ProjectPathHandler pathHandler) {
+        this.pathHandler = pathHandler;
+    }
+
+    public String getFullTestClassNameFrom(Path path) {
+        Path relative = pathHandler.getTestSourcePath().relativize(path);
+        return relative.toString().replace("/", ".").replace(".java", "");
     }
 
     public String getFullClassNameFrom(Path path) {
-        Path relative = testSourcePath.relativize(path);
+        Path relative = pathHandler.getMainSourcePath().relativize(pathHandler.getRootPath().resolve(path));
         return relative.toString().replace("/", ".").replace(".java", "");
     }
 
     public void initClassLoader() throws MalformedURLException {
         URL[] urls = new URL[]{
-                testClassPath.toFile().toURI().toURL(),
-                mainClassPath.toFile().toURI().toURL()
+                pathHandler.getTestClassPath().toFile().toURI().toURL(),
+                pathHandler.getMainClassPath().toFile().toURI().toURL()
         };
         classLoader = new URLClassLoader(urls);
         Thread.currentThread().setContextClassLoader(classLoader);
@@ -44,9 +41,9 @@ public class FileClassLoader {
 
     public void loadClasses() throws IOException {
         classes = Files
-                .walk(testSourcePath)
+                .walk(pathHandler.getTestSourcePath())
                 .filter(Files::isRegularFile)
-                .map(this::getFullClassNameFrom)
+                .map(this::getFullTestClassNameFrom)
                 .map(className -> {
                     try {
                         System.out.println(className);
