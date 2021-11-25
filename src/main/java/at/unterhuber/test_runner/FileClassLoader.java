@@ -7,38 +7,52 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileClassLoader {
-    private final String path;
-    private final String packageName;
-    private ClassLoader cl;
+    private final Path rootPath;
+    private final Path testSourcePath;
+    private final Path testClassPath;
+    private final Path mainClassPath;
+    private ClassLoader classLoader;
     private List<? extends Class<?>> classes;
 
-    public FileClassLoader(String path, String packageName) {
-        this.path = path;
-        this.packageName = packageName;
+    public FileClassLoader(String rootPath) {
+        // For now these paths only work for Gradle projects
+        this.rootPath = Path.of(rootPath);
+        this.testSourcePath = this.rootPath.resolve("src/test/java");
+        Path classPath = this.rootPath.resolve("build/classes/java");
+        this.mainClassPath = classPath.resolve("main");
+        this.testClassPath = classPath.resolve("test");
+    }
+
+    public String getFullClassNameFrom(Path path) {
+        Path relative = testSourcePath.relativize(path);
+        return relative.toString().replace("/", ".").replace(".java", "");
     }
 
     public void initClassLoader() throws MalformedURLException {
-        File testDir = new File(path + "build/classes/java/test");
-        File mainDir = new File(path + "build/classes/java/main");
-        URL[] urls = new URL[]{testDir.toURI().toURL(), mainDir.toURI().toURL()};
-        cl = new URLClassLoader(urls);
-        Thread.currentThread().setContextClassLoader(cl);
+        URL[] urls = new URL[]{
+                testClassPath.toFile().toURI().toURL(),
+                mainClassPath.toFile().toURI().toURL()
+        };
+        classLoader = new URLClassLoader(urls);
+        Thread.currentThread().setContextClassLoader(classLoader);
     }
 
     public void loadClasses() throws IOException {
         classes = Files
-                .walk(Paths.get(path + "build/classes/java/test"))
+                .walk(testSourcePath)
                 .filter(Files::isRegularFile)
-                .map(fileName -> packageName + "." + fileName.getFileName().toString().replace(".class", ""))
+                .map(this::getFullClassNameFrom)
                 .map(className -> {
                     try {
-                        return cl.loadClass(className);
+                        System.out.println(className);
+                        return classLoader.loadClass(className);
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                         return null;

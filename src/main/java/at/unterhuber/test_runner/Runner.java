@@ -9,9 +9,8 @@ public class Runner {
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         double threshold = 0.8;
         String path = args[0];
-        String packageName = args[1];
         RiskCalculator calculator = new RiskCalculator(path, new RiskMetric[]{new RiskMetric("Cbo"), new RiskMetric("NumberOfMethods")});
-        FileClassLoader loader = new FileClassLoader(path, packageName);
+        FileClassLoader loader = new FileClassLoader(path);
         TestSelector selector = new TestSelector(loader, threshold);
         TestExecutor executor = new TestExecutor(selector);
 
