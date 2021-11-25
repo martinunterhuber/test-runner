@@ -24,6 +24,10 @@ class TestTask extends JavaExec {
     @Input
     @Option(option="directory", description="The root directory of the project")
     String directory
+
+    @Input
+    @Option(option="changed", description="Changed .java files")
+    String changed
 }
 
 
@@ -31,7 +35,7 @@ task doCustomTest(type: TestTask) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'at.unterhuber.test_runner.Runner'
     doFirst {
-        args directory
+        args directory, changed
     }
 }
 

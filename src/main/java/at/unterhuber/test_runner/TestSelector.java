@@ -3,10 +3,8 @@ package at.unterhuber.test_runner;
 import org.junit.platform.engine.DiscoverySelector;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
@@ -21,10 +19,16 @@ public class TestSelector {
         this.threshold = threshold;
     }
 
-    public void determineClassesToTest(HashMap<String, Double> risk) {
+    public void determineClassesToTest(HashMap<String, Double> risk, String[] changedFiles) {
+        Set<String> changeSet = Arrays
+                .stream(changedFiles)
+                .map(file -> loader.getFullClassNameFrom(Path.of(file)))
+                .collect(Collectors.toSet());
+
         classesToTest = risk.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > threshold)
+                .filter(entry -> changeSet.contains(entry.getKey()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
