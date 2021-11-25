@@ -5,9 +5,6 @@ inputs:
   project-root:
     description: 'Project Root'
     required: true
-  package-name:
-    description: 'Package Name'
-    required: true
   script:
     description: 'Script to execute'
     required: true
@@ -37,6 +34,6 @@ runs:
       shell: bash
       working-directory: ./test-runner
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --package=${{ inputs.package-name }}
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }}
       shell: bash
       working-directory: ./test-runner
