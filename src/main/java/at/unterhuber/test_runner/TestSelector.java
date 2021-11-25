@@ -14,7 +14,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class TestSelector {
     private final FileClassLoader loader;
     private List<String> classesToTest;
-    private double threshold;
+    private final double threshold;
 
     public TestSelector(FileClassLoader loader, double threshold) {
         this.loader = loader;

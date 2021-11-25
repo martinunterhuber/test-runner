@@ -1,6 +1,5 @@
 package at.unterhuber.test_runner;
 
-import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.LauncherSession;
@@ -11,7 +10,6 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 

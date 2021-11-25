@@ -2,7 +2,7 @@ package at.unterhuber.test_runner;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.HashMap;
 
 
 public class Runner {

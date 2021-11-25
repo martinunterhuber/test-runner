@@ -70,7 +70,7 @@ public class RiskCalculator {
     }
 
     public void printSelectedMetrics() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        for(Map.Entry<String, CKClassResult> entry : ckMeasurements.entrySet()) {
+        for (Map.Entry<String, CKClassResult> entry : ckMeasurements.entrySet()) {
             for (RiskMetric metric : metrics) {
                 Method method = CKClassResult.class.getMethod("get" + metric.name);
                 System.out.println(entry.getKey() + " - " + metric.name + ": " + method.invoke(entry.getValue()));
