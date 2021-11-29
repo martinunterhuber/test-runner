@@ -34,6 +34,6 @@ runs:
       shell: bash
       working-directory: ./test-runner
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }}
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changes=""
       shell: bash
       working-directory: ./test-runner
