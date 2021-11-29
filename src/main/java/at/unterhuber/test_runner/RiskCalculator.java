@@ -61,7 +61,7 @@ public class RiskCalculator {
         for (List<RiskMeasurement> measurements : this.measurements.values()) {
             for (RiskMeasurement measurement : measurements) {
                 double value = risk.getOrDefault(measurement.getClassName(), 0.0);
-                System.out.println(measurement.getRelativeValue());
+                System.out.println(measurement);
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() / this.measurements.size());
             }
         }

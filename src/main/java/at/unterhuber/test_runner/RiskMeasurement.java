@@ -15,7 +15,7 @@ public class RiskMeasurement {
     }
 
     public void forMaxValue(double max) {
-        if (value != 0) {
+        if (max != 0) {
             relativeValue = (double) value / max;
         }
     }
@@ -26,5 +26,15 @@ public class RiskMeasurement {
 
     public String getClassName() {
         return className;
+    }
+
+    @Override
+    public String toString() {
+        return "RiskMeasurement{" +
+                "className='" + className + '\'' +
+                ", metric=" + metric.name +
+                ", value=" + value +
+                ", relativeValue=" + relativeValue +
+                '}';
     }
 }

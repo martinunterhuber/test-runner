@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Runner {
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        double threshold = 0.7;
+        double threshold = 0.4;
         String path = args[0];
         String changed = args[1];
         String[] changedFiles = changed.split(" ");
@@ -16,6 +16,7 @@ public class Runner {
         RiskCalculator calculator = new RiskCalculator(
                 path, new RiskMetric[]{
                         new RiskMetric("Wmc"),
+                        new RiskMetric("Rfc"),
                         new RiskMetric("Cbo"),
                         new RiskMetric("Dit"),
                         new RiskMetric("NumberOfMethods"),
