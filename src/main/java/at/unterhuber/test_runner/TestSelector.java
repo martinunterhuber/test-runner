@@ -28,7 +28,7 @@ public class TestSelector {
         classesToTest = risk.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > threshold)
-                .filter(entry -> changeSet.contains(entry.getKey()))
+                // .filter(entry -> changeSet.contains(entry.getKey()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
