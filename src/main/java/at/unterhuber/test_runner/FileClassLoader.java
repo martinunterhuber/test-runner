@@ -1,5 +1,10 @@
 package at.unterhuber.test_runner;
 
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.VariableDeclarator;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -7,8 +12,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FileClassLoader {
@@ -53,6 +60,21 @@ public class FileClassLoader {
                         return null;
                     }
                 }).collect(Collectors.toList());
+    }
+
+    public Map<String, List<VariableDeclarator>> getTestClassVariables() throws IOException {
+        return Files
+            .walk(pathHandler.getTestSourcePath())
+            .filter(Files::isRegularFile)
+            .collect(Collectors.toMap(this::getFullTestClassNameFrom, className -> {
+                try {
+                    CompilationUnit cu = StaticJavaParser.parse(className.toFile());
+                    return cu.findAll(VariableDeclarator.class);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    return new ArrayList<>();
+                }
+            }));
     }
 
     public List<? extends Class<?>> getTestClasses() {

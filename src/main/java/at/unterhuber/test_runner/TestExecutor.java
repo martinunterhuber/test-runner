@@ -9,6 +9,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
