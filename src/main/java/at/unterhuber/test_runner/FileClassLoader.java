@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class FileClassLoader {
     private final ProjectPathHandler pathHandler;
     private ClassLoader classLoader;
-    private List<? extends Class<?>> classes;
+    private List<? extends Class<?>> testClasses;
 
     public FileClassLoader(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -39,8 +39,8 @@ public class FileClassLoader {
         Thread.currentThread().setContextClassLoader(classLoader);
     }
 
-    public void loadClasses() throws IOException {
-        classes = Files
+    public void loadTestClasses() throws IOException {
+        testClasses = Files
                 .walk(pathHandler.getTestSourcePath())
                 .filter(Files::isRegularFile)
                 .map(this::getFullTestClassNameFrom)
@@ -55,12 +55,12 @@ public class FileClassLoader {
                 }).collect(Collectors.toList());
     }
 
-    public List<? extends Class<?>> getClasses() {
-        return classes;
+    public List<? extends Class<?>> getTestClasses() {
+        return testClasses;
     }
 
-    public List<Field> getFields() {
-        return classes
+    public List<Field> getTestFields() {
+        return testClasses
                 .stream()
                 .flatMap(clazz -> Arrays.stream(clazz.getDeclaredFields()))
                 .collect(Collectors.toList());

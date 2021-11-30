@@ -28,7 +28,7 @@ public class Runner {
         TestExecutor executor = new TestExecutor(selector);
 
         loader.initClassLoader();
-        loader.loadClasses();
+        loader.loadTestClasses();
 
         calculator.measure();
         calculator.initRiskMeasurements();

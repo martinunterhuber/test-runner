@@ -35,7 +35,7 @@ public class TestSelector {
 
     public List<DiscoverySelector> selectTestClasses() {
         System.out.println(Arrays.toString(classesToTest.toArray()));
-        List<Field> fields = loader.getFields();
+        List<Field> fields = loader.getTestFields();
         List<DiscoverySelector> selectors = fields.stream()
                 .filter(field -> classesToTest.contains(field.getType().getCanonicalName()))
                 .map(field -> selectClass(field.getDeclaringClass()))
