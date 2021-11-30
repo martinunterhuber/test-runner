@@ -13,12 +13,14 @@ public class RiskCalculator {
     private final Map<String, CKClassResult> ckMeasurements;
     private final Map<String, List<RiskMeasurement>> measurements;
     private final String path;
+    private final LimitConfig config;
 
-    public RiskCalculator(String path, RiskMetric[] metrics) {
+    public RiskCalculator(String path, RiskMetric[] metrics, LimitConfig config) {
         this.path = path;
         this.metrics = metrics;
         this.ckMeasurements = new HashMap<>();
         this.measurements = new HashMap<>();
+        this.config = config;
     }
 
     public void measure() {
@@ -62,6 +64,9 @@ public class RiskCalculator {
             for (RiskMeasurement measurement : measurements) {
                 double value = risk.getOrDefault(measurement.getClassName(), 0.0);
                 System.out.println(measurement);
+                if (measurement.getValue() > config.getLimitOf(measurement.getMetric())) {
+                    risk.put(measurement.getClassName(), 1d);
+                }
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() / this.measurements.size());
             }
         }
