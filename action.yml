@@ -9,6 +9,9 @@ inputs:
     description: 'Script to execute'
     required: true
     default: './gradlew doCustomTest'
+  diff:
+    description: 'Git diff to last successful build'
+    required: false
 
 runs:
   using: "composite"
@@ -34,6 +37,6 @@ runs:
       shell: bash
       working-directory: ./test-runner
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changed="todo"
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changed=${{ inputs.diff }}
       shell: bash
       working-directory: ./test-runner

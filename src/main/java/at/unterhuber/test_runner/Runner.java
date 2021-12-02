@@ -38,7 +38,6 @@ public class Runner {
         );
 
         config.loadConfig();
-        System.out.println(config.getLimitOf("Wmc"));
 
         loader.initClassLoader();
         loader.loadTestClasses();
