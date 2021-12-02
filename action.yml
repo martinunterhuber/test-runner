@@ -9,9 +9,9 @@ inputs:
     description: 'Script to execute'
     required: true
     default: './gradlew doCustomTest'
-  diff:
-    description: 'Git diff to last successful build'
-    required: false
+  github-token:
+    description: 'Github Token'
+    required: true
 
 runs:
   using: "composite"
@@ -36,7 +36,20 @@ runs:
       run: chmod +x gradlew
       shell: bash
       working-directory: ./test-runner
+    - uses: nrwl/last-successful-commit-action@v1
+      id: last_successful_commit
+      with:
+        branch: 'master'
+        workflow_id: 'build.yml'
+        github_token: ${{ inputs.github-token }}
+    - name: get diff
+      id: diff
+      run: |
+        DIFF=$(git diff --name-only ${{ steps.last_successful_commit.outputs.commit_hash }} | grep '.*.java')
+        echo "::set-output name=diff::$(echo $DIFF | tr '\n' ' ')"
+      working-directory: ./main
+      shell: bash
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changed="${{ inputs.diff }}"
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changed="${{ steps.diff.outputs.diff }}"
       shell: bash
       working-directory: ./test-runner
