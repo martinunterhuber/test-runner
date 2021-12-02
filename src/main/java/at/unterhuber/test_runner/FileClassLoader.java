@@ -64,17 +64,17 @@ public class FileClassLoader {
 
     public Map<String, List<VariableDeclarator>> getTestClassVariables() throws IOException {
         return Files
-            .walk(pathHandler.getTestSourcePath())
-            .filter(Files::isRegularFile)
-            .collect(Collectors.toMap(this::getFullTestClassNameFrom, className -> {
-                try {
-                    CompilationUnit cu = StaticJavaParser.parse(className.toFile());
-                    return cu.findAll(VariableDeclarator.class);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    return new ArrayList<>();
-                }
-            }));
+                .walk(pathHandler.getTestSourcePath())
+                .filter(Files::isRegularFile)
+                .collect(Collectors.toMap(this::getFullTestClassNameFrom, className -> {
+                    try {
+                        CompilationUnit cu = StaticJavaParser.parse(className.toFile());
+                        return cu.findAll(VariableDeclarator.class);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        return new ArrayList<>();
+                    }
+                }));
     }
 
     public List<? extends Class<?>> getTestClasses() {

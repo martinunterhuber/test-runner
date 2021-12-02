@@ -1,9 +1,7 @@
 package at.unterhuber.test_runner;
 
-import com.github.javaparser.ast.body.VariableDeclarator;
 import org.junit.platform.engine.DiscoverySelector;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
@@ -13,8 +11,8 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 public class TestSelector {
     private final FileClassLoader loader;
-    private List<String> classesToTest;
     private final double threshold;
+    private List<String> classesToTest;
 
     public TestSelector(FileClassLoader loader, double threshold) {
         this.loader = loader;

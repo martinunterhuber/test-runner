@@ -2,7 +2,7 @@ package at.unterhuber.test_runner;
 
 import java.nio.file.Path;
 
-public class GradlePathHandler implements ProjectPathHandler{
+public class GradlePathHandler implements ProjectPathHandler {
     private final Path rootPath;
 
     public GradlePathHandler(String rootPath) {

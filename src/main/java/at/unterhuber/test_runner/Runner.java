@@ -1,11 +1,7 @@
 package at.unterhuber.test_runner;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 public class Runner {
@@ -20,7 +16,7 @@ public class Runner {
 
     private static final double threshold = 0.4;
 
-    public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static void main(String[] args) throws Throwable {
         String path = args[0];
         String[] changedFiles = System.getenv("DIFF").split(" ");
         System.out.println(Arrays.toString(changedFiles));
