@@ -22,8 +22,7 @@ public class Runner {
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String path = args[0];
-        String changed = args[1];
-        String[] changedFiles = changed.split(" ");
+        String[] changedFiles = System.getenv("DIFF").split(" ");
         System.out.println(Arrays.toString(changedFiles));
 
         ProjectPathHandler pathHandler = new GradlePathHandler(path);

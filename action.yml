@@ -46,10 +46,12 @@ runs:
       id: diff
       run: |
         DIFF=$(git diff --name-only ${{ steps.last_successful_commit.outputs.commit_hash }} | grep '.*.java')
-        echo "::set-output name=diff::$(echo $DIFF | tr '\n' ' ')"
+        echo 'DIFF<<EOF' >> $GITHUB_ENV
+        echo $DIFF >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
       working-directory: ./main
       shell: bash
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --changed="${{ steps.diff.outputs.diff }}"
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }}
       shell: bash
       working-directory: ./test-runner
