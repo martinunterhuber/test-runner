@@ -32,8 +32,15 @@ public class FileClassLoader {
         return relative.toString().replace("/", ".").replace(".java", "");
     }
 
-    public String getFullClassNameFrom(Path path) {
+    public String getFullMainClassNameFrom(Path path) {
         Path relative = pathHandler.getMainSourcePath().relativize(pathHandler.getRootPath().resolve(path));
+        return relative.toString().replace("/", ".").replace(".java", "");
+    }
+
+    public String getFullClassNameFrom(Path path) {
+        Path relativeMain = pathHandler.getMainSourcePath().relativize(pathHandler.getRootPath().resolve(path));
+        Path relativeTest = pathHandler.getTestSourcePath().relativize(pathHandler.getRootPath().resolve(path));
+        Path relative = relativeMain.toString().startsWith("../") ? relativeTest : relativeMain;
         return relative.toString().replace("/", ".").replace(".java", "");
     }
 

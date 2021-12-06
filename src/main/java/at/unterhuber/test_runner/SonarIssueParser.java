@@ -64,7 +64,7 @@ public class SonarIssueParser {
     private JSONObject parseJson(String content) throws ParseException {
         JSONParser parser = new JSONParser();
         Object resultObject = parser.parse(content);
-        return (JSONObject)resultObject;
+        return (JSONObject) resultObject;
     }
 
     public Map<String, List<SonarIssue>> getIssuesByClass() throws IOException, URISyntaxException, InterruptedException, ParseException, ExecutionException {

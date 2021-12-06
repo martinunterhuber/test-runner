@@ -2,9 +2,12 @@ package at.unterhuber.test_runner;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Runner {
+    // TODO: add these to config?
     private static final String[] metricNames = new String[]{
             "Wmc",
             "Rfc",
@@ -13,24 +16,22 @@ public class Runner {
             "NumberOfMethods",
             "NumberOfFields"
     };
-
-    private static final double threshold = 0.4;
+    private static final double metricThreshold = 0.4;
+    private static final int issueThreshold = 20;
+    private static final String projectName = "martinunterhuber_test-project";
 
     public static void main(String[] args) throws Throwable {
         String path = args[0];
         String[] changedFiles = System.getenv("DIFF").split(" ");
-        System.out.println(Arrays.toString(changedFiles));
+        RiskMetric[] riskMetrics = Arrays.stream(metricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
 
+        SonarIssueParser issueParser = new SonarIssueParser(projectName);
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
         FileClassLoader loader = new FileClassLoader(pathHandler);
-        TestSelector selector = new TestSelector(loader, threshold);
+        TestSelector selector = new TestSelector(loader, metricThreshold, issueThreshold);
         TestExecutor executor = new TestExecutor(selector);
         LimitConfig config = new LimitConfig(pathHandler.getRootPath(), metricNames);
-        RiskCalculator calculator = new RiskCalculator(
-                path,
-                Arrays.stream(metricNames).map(RiskMetric::new).toArray(RiskMetric[]::new),
-                config
-        );
+        RiskCalculator calculator = new RiskCalculator(path, riskMetrics, config);
 
         config.loadConfig();
 
@@ -42,7 +43,9 @@ public class Runner {
         calculator.printSelectedMetrics();
         HashMap<String, Double> risk = calculator.getRiskByClass();
 
-        selector.determineClassesToTest(risk, changedFiles);
+        Map<String, List<SonarIssue>> issues = issueParser.getIssuesByClass();
+
+        selector.determineClassesToTest(risk, changedFiles, issues);
 
         executor.executeTests();
     }

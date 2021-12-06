@@ -20,7 +20,7 @@ public class TestExecutor {
         this.selector = selector;
     }
 
-    public void executeTests() throws Throwable {
+    public void executeTests() {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(selector.selectTestClasses())
                 .filters(includeClassNamePatterns(".*"))

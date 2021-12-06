@@ -11,26 +11,55 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 public class TestSelector {
     private final FileClassLoader loader;
-    private final double threshold;
-    private List<String> classesToTest;
+    private final double metricThreshold;
+    private final int issueThreshold;
+    private List<String> classesToTest = new ArrayList<>();
 
-    public TestSelector(FileClassLoader loader, double threshold) {
+    public TestSelector(FileClassLoader loader, double metricThreshold, int issueThreshold) {
         this.loader = loader;
-        this.threshold = threshold;
+        this.metricThreshold = metricThreshold;
+        this.issueThreshold = issueThreshold;
     }
 
-    public void determineClassesToTest(HashMap<String, Double> risk, String[] changedFiles) {
-        Set<String> changeSet = Arrays
+    public void determineClassesToTest(HashMap<String, Double> risk, String[] changedFiles, Map<String, List<SonarIssue>> issues) {
+        Set<String> classesToTest1 = getClassesToTestByMetric(risk);
+        Set<String> classesToTest2 = getClassesToTestByIssues(issues);
+        classesToTest.addAll(classesToTest2);
+        classesToTest.addAll(classesToTest1);
+        // excludeUnchanged(changedFiles);
+    }
+
+    private void excludeUnchanged(String[] changedFiles) {
+        Set<String> changeSet = getChangeSet(changedFiles);
+        classesToTest = classesToTest
+                .stream()
+                .filter(changeSet::contains)
+                .collect(Collectors.toList());
+    }
+
+    private Set<String> getClassesToTestByIssues(Map<String, List<SonarIssue>> issues) {
+        return issues.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().stream().map(SonarIssue::computeRisk).reduce(Integer::sum).orElse(0) > issueThreshold)
+                .map(Map.Entry::getKey)
+                .map(Path::of)
+                .map(loader::getFullClassNameFrom)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
+        return risk.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() > metricThreshold)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getChangeSet(String[] changedFiles) {
+        return Arrays
                 .stream(changedFiles)
                 .map(file -> loader.getFullClassNameFrom(Path.of(file)))
                 .collect(Collectors.toSet());
-
-        classesToTest = risk.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() > threshold)
-                // .filter(entry -> changeSet.contains(entry.getKey()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
     }
 
     public List<DiscoverySelector> selectTestClasses() {
