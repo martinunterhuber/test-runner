@@ -89,6 +89,6 @@ public class TestSelector {
                         .collect(Collectors.toSet())
         );
         System.out.println(Arrays.toString(selectors.toArray()));
-        return selectors.stream().toList();
+        return new ArrayList<>(selectors);
     }
 }
