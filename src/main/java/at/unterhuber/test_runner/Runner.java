@@ -16,6 +16,10 @@ public class Runner {
             "NumberOfMethods",
             "NumberOfFields"
     };
+    private static final String[] testMetricNames = new String[]{
+            "Wmc",
+            "NumberOfMethods"
+    };
     private static final double metricThreshold = 0.4;
     private static final int issueThreshold = 20;
     private static final String projectName = "martinunterhuber_test-project";
@@ -24,6 +28,7 @@ public class Runner {
         String path = args[0];
         String[] changedFiles = System.getenv("DIFF").split(" ");
         RiskMetric[] riskMetrics = Arrays.stream(metricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
+        RiskMetric[] testRiskMetrics = Arrays.stream(testMetricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
 
         SonarIssueParser issueParser = new SonarIssueParser(projectName);
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
@@ -31,17 +36,26 @@ public class Runner {
         TestSelector selector = new TestSelector(loader, metricThreshold, issueThreshold);
         TestExecutor executor = new TestExecutor(selector);
         LimitConfig config = new LimitConfig(pathHandler.getRootPath(), metricNames);
-        RiskCalculator calculator = new RiskCalculator(path, riskMetrics, config);
+        MetricMeasure measure = new MetricMeasure(path + "src/main/", riskMetrics);
+        MetricMeasure testMeasure = new MetricMeasure(path + "src/test/", testRiskMetrics);
+        RiskCalculator calculator = new RiskCalculator(measure, config);
+        RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
 
         config.loadConfig();
 
         loader.initClassLoader();
         loader.loadTestClasses();
 
-        calculator.measure();
-        calculator.initRiskMeasurements();
-        calculator.printSelectedMetrics();
+        measure.measure();
+        measure.initRiskMeasurements();
+        measure.printSelectedMetrics();
+
+        testMeasure.measure();
+        testMeasure.initRiskMeasurements();
+        testMeasure.printSelectedMetrics();
+
         HashMap<String, Double> risk = calculator.getRiskByClass();
+        HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
         Map<String, List<SonarIssue>> issues = issueParser.getIssuesByClass();
 
