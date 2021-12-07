@@ -37,7 +37,7 @@ public class Runner {
         MetricMeasure testMeasure = new MetricMeasure(path + "src/test/", testRiskMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
-        MyPMD myPMD = new MyPMD(pathHandler);
+        IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
 
         config.loadConfig();
 
@@ -55,7 +55,7 @@ public class Runner {
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
-        Map<String, List<Issue>> issue = myPMD.getIssuesByClass();
+        Map<String, List<Issue>> issue = issueMeasure.getIssuesByClass();
 
         selector.determineClassesToTest(risk, testRisk, changedFiles, issue);
 

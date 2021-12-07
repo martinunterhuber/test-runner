@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.*;
 
-public class MyPMD {
+public class IssueMeasure {
     private final ProjectPathHandler pathHandler;
 
-    public MyPMD(ProjectPathHandler pathHandler) {
+    public IssueMeasure(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
     }
 
