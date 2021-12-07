@@ -12,6 +12,7 @@ import java.util.Map;
 public class Runner {
     // TODO: add these to config?
     private static final String[] metricNames = new String[]{
+            "Loc",
             "Wmc",
             "Rfc",
             "Cbo",
@@ -23,7 +24,8 @@ public class Runner {
             "Wmc",
             "NumberOfMethods"
     };
-    private static final double metricThreshold = 0.4;
+    private static final double metricThreshold = 3.0;
+    private static final double testMetricThreshold = 1.5;
     private static final int issueThreshold = 20;
     private static final String projectName = "martinunterhuber_test-project";
 
@@ -36,9 +38,9 @@ public class Runner {
         SonarIssueParser issueParser = new SonarIssueParser(projectName);
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
         FileClassLoader loader = new FileClassLoader(pathHandler);
-        TestSelector selector = new TestSelector(loader, metricThreshold, issueThreshold);
+        TestSelector selector = new TestSelector(loader, metricThreshold, testMetricThreshold, issueThreshold);
         TestExecutor executor = new TestExecutor(selector);
-        LimitConfig config = new LimitConfig(pathHandler.getRootPath(), metricNames);
+        Config config = new Config(pathHandler.getRootPath(), metricNames);
         MetricMeasure measure = new MetricMeasure(path + "src/main/", riskMetrics);
         MetricMeasure testMeasure = new MetricMeasure(path + "src/test/", testRiskMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
@@ -68,7 +70,7 @@ public class Runner {
 
         Map<String, List<SonarIssue>> issues = issueParser.getIssuesByClass();
 
-        selector.determineClassesToTest(risk, changedFiles, issues);
+        selector.determineClassesToTest(risk, testRisk, changedFiles, issues);
 
         executor.executeTests();
     }

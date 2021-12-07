@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class LimitConfig {
-    private final Map<String, Integer> limits = new HashMap<>();
+public class Config {
+    private final Map<String, Double> weights = new HashMap<>();
     private final Path config;
     private final String[] metrics;
 
-    public LimitConfig(Path config, String[] metrics) {
+    public Config(Path config, String[] metrics) {
         this.config = config;
         this.metrics = metrics;
     }
@@ -23,14 +23,14 @@ public class LimitConfig {
             Properties prop = new Properties();
             prop.load(input);
             for (String key : metrics) {
-                limits.put(key, Integer.parseInt(prop.getProperty(key)));
+                weights.put(key, Double.parseDouble(prop.getProperty(key)));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Integer getLimitOf(String key) {
-        return limits.get(key);
+    public Double getWeightOf(String key) {
+        return weights.get(key);
     }
 }

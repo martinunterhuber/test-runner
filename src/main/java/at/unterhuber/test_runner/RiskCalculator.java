@@ -6,9 +6,9 @@ import java.util.List;
 
 public class RiskCalculator {
     private final MetricMeasure measure;
-    private final LimitConfig config;
+    private final Config config;
 
-    public RiskCalculator(MetricMeasure measure, LimitConfig config) {
+    public RiskCalculator(MetricMeasure measure, Config config) {
         this.measure = measure;
         this.config = config;
     }
@@ -19,10 +19,7 @@ public class RiskCalculator {
             for (RiskMeasurement measurement : measurements) {
                 double value = risk.getOrDefault(measurement.getClassName(), 0.0);
                 System.out.println(measurement);
-                if (measurement.getValue() > config.getLimitOf(measurement.getMetric())) {
-                    risk.put(measurement.getClassName(), 1d);
-                }
-                risk.put(measurement.getClassName(), value + measurement.getRelativeValue() / measure.getMeasurements().size());
+                risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
         System.out.println(Arrays.toString(risk.values().toArray()));
