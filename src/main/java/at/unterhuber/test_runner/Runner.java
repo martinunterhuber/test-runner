@@ -18,10 +18,6 @@ public class Runner {
             "Wmc",
             "NumberOfMethods"
     };
-    private static final double metricThreshold = 3.0;
-    private static final double testMetricThreshold = 1.5;
-    private static final int issueThreshold = 2;
-    private static final int testIssueThreshold = 2;
 
     public static void main(String[] args) throws Throwable {
         String path = args[0];
@@ -30,12 +26,12 @@ public class Runner {
         RiskMetric[] testRiskMetrics = Arrays.stream(testMetricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
 
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
+        Config config = new Config(pathHandler.getRootPath());
         FileClassLoader loader = new FileClassLoader(pathHandler);
-        TestSelector selector = new TestSelector(loader, changedFiles, metricThreshold, testMetricThreshold, issueThreshold, testIssueThreshold);
+        TestSelector selector = new TestSelector(loader, changedFiles, config);
         TestExecutor executor = new TestExecutor(selector);
-        Config config = new Config(pathHandler.getRootPath(), metricNames);
-        MetricMeasure measure = new MetricMeasure(path + "src/main/", riskMetrics);
-        MetricMeasure testMeasure = new MetricMeasure(path + "src/test/", testRiskMetrics);
+        MetricMeasure measure = new MetricMeasure(pathHandler.getMainSourcePath().toString(), riskMetrics);
+        MetricMeasure testMeasure = new MetricMeasure(pathHandler.getTestSourcePath().toString(), testRiskMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);

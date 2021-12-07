@@ -13,22 +13,15 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class TestSelector {
     private final FileClassLoader loader;
     private final Set<String> changeSet;
-
-    private final double metricThreshold;
-    private final double testMetricThreshold;
-    private final int issueThreshold;
-    private final int testIssueThreshold;
+    private final Config config;
 
     private Set<String> classesToTest = new HashSet<>();
     private Set<String> testClassesToRun = new HashSet<>();
 
-    public TestSelector(FileClassLoader loader, String[] changedFiles, double metricThreshold, double testMetricThreshold, int issueThreshold, int testIssueThreshold) {
+    public TestSelector(FileClassLoader loader, String[] changedFiles, Config config) {
         this.loader = loader;
         this.changeSet = getChangeSet(changedFiles);
-        this.metricThreshold = metricThreshold;
-        this.issueThreshold = issueThreshold;
-        this.testMetricThreshold = testMetricThreshold;
-        this.testIssueThreshold = testIssueThreshold;
+        this.config = config;
     }
 
     private Set<String> getChangeSet(String[] changedFiles) {
@@ -47,7 +40,7 @@ public class TestSelector {
     private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
         return risk.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue() > metricThreshold)
+                .filter(entry -> entry.getValue() > config.getMetricThreshold())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
@@ -60,7 +53,7 @@ public class TestSelector {
                         .stream()
                         .map(Issue::computeRisk)
                         .reduce(Integer::sum)
-                        .orElse(0) > issueThreshold)
+                        .orElse(0) > config.getIssueThreshold())
                 .map(Map.Entry::getKey)
                 .map(Path::of)
                 .map(loader::getFullClassNameFrom)
@@ -83,7 +76,7 @@ public class TestSelector {
     private Set<String> getTestClassesToRunByMetric(HashMap<String, Double> risk) {
         return risk.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue() > testMetricThreshold)
+                .filter(entry -> entry.getValue() > config.getTestMetricThreshold())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
@@ -96,7 +89,7 @@ public class TestSelector {
                         .stream()
                         .map(Issue::computeRisk)
                         .reduce(Integer::sum)
-                        .orElse(0) > testIssueThreshold)
+                        .orElse(0) > config.getTestIssueThreshold())
                 .map(Map.Entry::getKey)
                 .map(Path::of)
                 .map(loader::getFullClassNameFrom)

@@ -10,21 +10,30 @@ import java.util.Properties;
 
 public class Config {
     private final Map<String, Double> weights = new HashMap<>();
-    private final Path config;
-    private final String[] metrics;
+    private final Path path;
 
-    public Config(Path config, String[] metrics) {
-        this.config = config;
-        this.metrics = metrics;
+    private double metricThreshold;
+    private double testMetricThreshold;
+    private int issueThreshold;
+    private int testIssueThreshold;
+
+    public Config(Path path) {
+        this.path = path;
     }
 
     public void loadConfig() {
-        try (InputStream input = new FileInputStream(config.resolve("test.properties").toFile())) {
+        try (InputStream input = new FileInputStream(path.resolve("test.properties").toFile())) {
             Properties prop = new Properties();
             prop.load(input);
-            for (String key : metrics) {
-                weights.put(key, Double.parseDouble(prop.getProperty(key)));
+            for (String property : prop.stringPropertyNames()) {
+                if (property.startsWith("weight")) {
+                    weights.put(property.split("_")[1], Double.parseDouble(prop.getProperty(property)));
+                }
             }
+            metricThreshold = Double.parseDouble(prop.getProperty("metricThreshold"));
+            testMetricThreshold = Double.parseDouble(prop.getProperty("testMetricThreshold"));
+            issueThreshold = Integer.parseInt(prop.getProperty("issueThreshold"));
+            testIssueThreshold = Integer.parseInt(prop.getProperty("testIssueThreshold"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -32,5 +41,37 @@ public class Config {
 
     public Double getWeightOf(String key) {
         return weights.get(key);
+    }
+
+    public double getMetricThreshold() {
+        return metricThreshold;
+    }
+
+    public void setMetricThreshold(double metricThreshold) {
+        this.metricThreshold = metricThreshold;
+    }
+
+    public double getTestMetricThreshold() {
+        return testMetricThreshold;
+    }
+
+    public void setTestMetricThreshold(double testMetricThreshold) {
+        this.testMetricThreshold = testMetricThreshold;
+    }
+
+    public int getIssueThreshold() {
+        return issueThreshold;
+    }
+
+    public void setIssueThreshold(int issueThreshold) {
+        this.issueThreshold = issueThreshold;
+    }
+
+    public int getTestIssueThreshold() {
+        return testIssueThreshold;
+    }
+
+    public void setTestIssueThreshold(int testIssueThreshold) {
+        this.testIssueThreshold = testIssueThreshold;
     }
 }
