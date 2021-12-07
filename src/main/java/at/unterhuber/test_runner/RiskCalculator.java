@@ -15,8 +15,8 @@ public class RiskCalculator {
 
     public HashMap<String, Double> getRiskByClass() {
         HashMap<String, Double> risk = new HashMap<>();
-        for (List<RiskMeasurement> measurements : measure.getMeasurements().values()) {
-            for (RiskMeasurement measurement : measurements) {
+        for (List<Measurement> measurements : measure.getMeasurements().values()) {
+            for (Measurement measurement : measurements) {
                 double value = risk.getOrDefault(measurement.getClassName(), 0.0);
                 System.out.println(measurement);
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));

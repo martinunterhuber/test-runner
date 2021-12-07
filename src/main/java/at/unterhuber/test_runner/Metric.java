@@ -1,9 +1,9 @@
 package at.unterhuber.test_runner;
 
-public class RiskMetric {
+public class Metric {
     public final String name;
 
-    public RiskMetric(String name) {
+    public Metric(String name) {
         this.name = name;
     }
 }

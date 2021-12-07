@@ -1,14 +1,14 @@
 package at.unterhuber.test_runner;
 
-public class RiskMeasurement {
+public class Measurement {
     private final String className;
-    private final RiskMetric metric;
+    private final Metric metric;
     private final int value;
 
     // value relative to the maximum value of this metric (=value/max)
     private double relativeValue = 1.0;
 
-    public RiskMeasurement(String className, RiskMetric metric, int value) {
+    public Measurement(String className, Metric metric, int value) {
         this.className = className;
         this.metric = metric;
         this.value = value;
@@ -38,7 +38,7 @@ public class RiskMeasurement {
 
     @Override
     public String toString() {
-        return "RiskMeasurement{" +
+        return "Measurement{" +
                 "className='" + className + '\'' +
                 ", metric=" + metric.name +
                 ", value=" + value +

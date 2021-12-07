@@ -22,16 +22,16 @@ public class Runner {
     public static void main(String[] args) throws Throwable {
         String path = args[0];
         String[] changedFiles = System.getenv("DIFF").split(" ");
-        RiskMetric[] riskMetrics = Arrays.stream(metricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
-        RiskMetric[] testRiskMetrics = Arrays.stream(testMetricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
+        Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
+        Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
         Config config = new Config(pathHandler.getRootPath());
         FileClassLoader loader = new FileClassLoader(pathHandler);
         TestSelector selector = new TestSelector(loader, changedFiles, config);
         TestExecutor executor = new TestExecutor(selector);
-        MetricMeasure measure = new MetricMeasure(pathHandler.getMainSourcePath().toString(), riskMetrics);
-        MetricMeasure testMeasure = new MetricMeasure(pathHandler.getTestSourcePath().toString(), testRiskMetrics);
+        MetricMeasure measure = new MetricMeasure(pathHandler.getMainSourcePath().toString(), metrics);
+        MetricMeasure testMeasure = new MetricMeasure(pathHandler.getTestSourcePath().toString(), testMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
@@ -42,11 +42,11 @@ public class Runner {
         loader.loadTestClasses();
 
         measure.measure();
-        measure.initRiskMeasurements();
+        measure.initMeasurements();
         measure.printSelectedMetrics();
 
         testMeasure.measure();
-        testMeasure.initRiskMeasurements();
+        testMeasure.initMeasurements();
         testMeasure.printSelectedMetrics();
 
         HashMap<String, Double> risk = calculator.getRiskByClass();

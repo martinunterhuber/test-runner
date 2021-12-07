@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 public class MetricMeasure {
-    private final RiskMetric[] metrics;
+    private final Metric[] metrics;
     private final Map<String, CKClassResult> ckMeasurements;
-    private final Map<String, List<RiskMeasurement>> measurements;
+    private final Map<String, List<Measurement>> measurements;
     private final String path;
 
-    public MetricMeasure(String path, RiskMetric[] metrics) {
+    public MetricMeasure(String path, Metric[] metrics) {
         this.path = path;
         this.metrics = metrics;
         this.ckMeasurements = new HashMap<>();
@@ -39,21 +39,21 @@ public class MetricMeasure {
         });
     }
 
-    public void initRiskMeasurements() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        for (RiskMetric metric : metrics) {
-            List<RiskMeasurement> metricMeasurements = new ArrayList<>();
+    public void initMeasurements() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        for (Metric metric : metrics) {
+            List<Measurement> metricMeasurements = new ArrayList<>();
             measurements.put(metric.name, metricMeasurements);
             int max = 0;
             for (CKClassResult result : ckMeasurements.values()) {
                 Method method = CKClassResult.class.getMethod("get" + metric.name);
                 int value = (int) method.invoke(result);
-                metricMeasurements.add(new RiskMeasurement(result.getClassName(), metric, value));
+                metricMeasurements.add(new Measurement(result.getClassName(), metric, value));
                 if (value > max) {
                     max = value;
                 }
             }
 
-            for (RiskMeasurement measurement : metricMeasurements) {
+            for (Measurement measurement : metricMeasurements) {
                 measurement.forMaxValue(max);
             }
         }
@@ -61,14 +61,14 @@ public class MetricMeasure {
 
     public void printSelectedMetrics() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         for (Map.Entry<String, CKClassResult> entry : ckMeasurements.entrySet()) {
-            for (RiskMetric metric : metrics) {
+            for (Metric metric : metrics) {
                 Method method = CKClassResult.class.getMethod("get" + metric.name);
                 System.out.println(entry.getKey() + " - " + metric.name + ": " + method.invoke(entry.getValue()));
             }
         }
     }
 
-    public Map<String, List<RiskMeasurement>> getMeasurements() {
+    public Map<String, List<Measurement>> getMeasurements() {
         return measurements;
     }
 }
