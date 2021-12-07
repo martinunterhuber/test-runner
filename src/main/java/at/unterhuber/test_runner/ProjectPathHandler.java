@@ -16,4 +16,8 @@ public interface ProjectPathHandler {
     Path getMainSourcePath();
 
     Path getClassPath();
+
+    boolean isMainSourcePath(String absolutePath);
+
+    boolean isTestSourcePath(String absolutePath);
 }

@@ -10,23 +10,29 @@ import java.util.*;
 
 public class IssueMeasure {
     private final ProjectPathHandler pathHandler;
+    private Map<String, List<Issue>> issues = new HashMap<>();
+    private Map<String, List<Issue>> testIssues = new HashMap<>();
 
     public IssueMeasure(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
     }
 
-    public Map<String, List<Issue>> getIssuesByClass() throws IOException {
+    public void initIssuesByClass() throws IOException {
         Report report = generateReport();
-        Map<String, List<Issue>> issuesByClass = new HashMap<>();
         for (RuleViolation violation : report.getViolations()) {
-            List<Issue> issues = issuesByClass.getOrDefault(violation.getClassName(), new ArrayList<>());
-            issues.add(new Issue(violation));
-            issuesByClass.put(violation.getClassName(), issues);
+            Map<String, List<Issue>> issuesByClass;
+            if (pathHandler.isMainSourcePath(violation.getFilename())) {
+                issuesByClass = issues;
+            } else {
+                issuesByClass = testIssues;
+            }
+            List<Issue> issuesList = issuesByClass.getOrDefault(violation.getFilename(), new ArrayList<>());
+            issuesList.add(new Issue(violation));
+            issuesByClass.put(violation.getFilename(), issuesList);
         }
-        return issuesByClass;
     }
 
-    public Report generateReport() throws IOException {
+    private Report generateReport() throws IOException {
         PMDConfiguration configuration = new PMDConfiguration();
         configuration.setMinimumPriority(RulePriority.LOW);
         configuration.setInputPaths(pathHandler.getSourcePath().toString());
@@ -47,5 +53,13 @@ public class IssueMeasure {
                 ((URLClassLoader) auxiliaryClassLoader).close();
             }
         }
+    }
+
+    public Map<String, List<Issue>> getIssues() {
+        return issues;
+    }
+
+    public Map<String, List<Issue>> getTestIssues() {
+        return testIssues;
     }
 }

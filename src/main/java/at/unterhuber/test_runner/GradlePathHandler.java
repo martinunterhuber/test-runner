@@ -43,4 +43,14 @@ public class GradlePathHandler implements ProjectPathHandler {
     public Path getTestClassPath() {
         return getClassPath().resolve("test");
     }
+
+    @Override
+    public boolean isMainSourcePath(String absolutePath) {
+        return !getMainSourcePath().relativize(Path.of(absolutePath)).startsWith("../");
+    }
+
+    @Override
+    public boolean isTestSourcePath(String absolutePath) {
+        return !getTestSourcePath().relativize(Path.of(absolutePath)).startsWith("../");
+    }
 }

@@ -12,34 +12,44 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 public class TestSelector {
     private final FileClassLoader loader;
-    private final double metricThreshold;
-    private final int issueThreshold;
-    private final double testMetricThreshold;
-    private List<String> classesToTest = new ArrayList<>();
-    private List<String> testClassesToRun = new ArrayList<>();
+    private final Set<String> changeSet;
 
-    public TestSelector(FileClassLoader loader, double metricThreshold, double testMetricThreshold, int issueThreshold) {
+    private final double metricThreshold;
+    private final double testMetricThreshold;
+    private final int issueThreshold;
+    private final int testIssueThreshold;
+
+    private Set<String> classesToTest = new HashSet<>();
+    private Set<String> testClassesToRun = new HashSet<>();
+
+    public TestSelector(FileClassLoader loader, String[] changedFiles, double metricThreshold, double testMetricThreshold, int issueThreshold, int testIssueThreshold) {
         this.loader = loader;
+        this.changeSet = getChangeSet(changedFiles);
         this.metricThreshold = metricThreshold;
         this.issueThreshold = issueThreshold;
         this.testMetricThreshold = testMetricThreshold;
+        this.testIssueThreshold = testIssueThreshold;
     }
 
-    public void determineClassesToTest(HashMap<String, Double> risk, HashMap<String, Double> testRisk, String[] changedFiles, Map<String, List<Issue>> issues) {
-        Set<String> classesToTest1 = getClassesToTestByMetric(risk);
-        Set<String> classesToTest2 = getClassesToTestByIssues(issues);
-        testClassesToRun.addAll(getTestClassesToRun(testRisk));
-        classesToTest.addAll(classesToTest2);
-        classesToTest.addAll(classesToTest1);
-        // excludeUnchanged(changedFiles);
+    private Set<String> getChangeSet(String[] changedFiles) {
+        return Arrays
+                .stream(changedFiles)
+                .map(file -> loader.getFullClassNameFrom(Path.of(file)))
+                .collect(Collectors.toSet());
     }
 
-    private void excludeUnchanged(String[] changedFiles) {
-        Set<String> changeSet = getChangeSet(changedFiles);
-        classesToTest = classesToTest
+    public void determineClassesToTest(HashMap<String, Double> risk, Map<String, List<Issue>> issues) {
+        classesToTest.addAll(getClassesToTestByMetric(risk));
+        classesToTest.addAll(getClassesToTestByIssues(issues));
+        // excludeUnchanged();
+    }
+
+    private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
+        return risk.entrySet()
                 .stream()
-                .filter(changeSet::contains)
-                .collect(Collectors.toList());
+                .filter(entry -> entry.getValue() > metricThreshold)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> getClassesToTestByIssues(Map<String, List<Issue>> issues) {
@@ -57,7 +67,20 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    private Set<String> getTestClassesToRun(HashMap<String, Double> risk) {
+    private void excludeUnchanged(String[] changedFiles) {
+        classesToTest = classesToTest
+                .stream()
+                .filter(changeSet::contains)
+                .collect(Collectors.toSet());
+    }
+
+    public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues) {
+        testClassesToRun.addAll(getTestClassesToRunByMetric(testRisk));
+        testClassesToRun.addAll(getTestClassesToRunByIssues(testIssues));
+        // excludeUnchangedTests();
+    }
+
+    private Set<String> getTestClassesToRunByMetric(HashMap<String, Double> risk) {
         return risk.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > testMetricThreshold)
@@ -65,23 +88,31 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
-        return risk.entrySet()
+    private Set<String> getTestClassesToRunByIssues(Map<String, List<Issue>> issues) {
+        return issues.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue() > metricThreshold)
+                .filter(entry -> entry
+                        .getValue()
+                        .stream()
+                        .map(Issue::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0) > testIssueThreshold)
                 .map(Map.Entry::getKey)
+                .map(Path::of)
+                .map(loader::getFullClassNameFrom)
                 .collect(Collectors.toSet());
     }
 
-    private Set<String> getChangeSet(String[] changedFiles) {
-        return Arrays
-                .stream(changedFiles)
-                .map(file -> loader.getFullClassNameFrom(Path.of(file)))
+    private void excludeUnchangedTests(String[] changedFiles) {
+        testClassesToRun = testClassesToRun
+                .stream()
+                .filter(changeSet::contains)
                 .collect(Collectors.toSet());
     }
 
     public List<DiscoverySelector> selectTestClasses() {
         System.out.println(Arrays.toString(classesToTest.toArray()));
+        System.out.println(Arrays.toString(testClassesToRun.toArray()));
         List<Field> fields = loader.getTestFields();
         Set<DiscoverySelector> selectors = fields.stream()
                 .filter(field -> classesToTest.contains(field.getType().getCanonicalName()))

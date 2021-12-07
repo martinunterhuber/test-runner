@@ -20,7 +20,8 @@ public class Runner {
     };
     private static final double metricThreshold = 3.0;
     private static final double testMetricThreshold = 1.5;
-    private static final int issueThreshold = 20;
+    private static final int issueThreshold = 2;
+    private static final int testIssueThreshold = 2;
 
     public static void main(String[] args) throws Throwable {
         String path = args[0];
@@ -30,7 +31,7 @@ public class Runner {
 
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
         FileClassLoader loader = new FileClassLoader(pathHandler);
-        TestSelector selector = new TestSelector(loader, metricThreshold, testMetricThreshold, issueThreshold);
+        TestSelector selector = new TestSelector(loader, changedFiles, metricThreshold, testMetricThreshold, issueThreshold, testIssueThreshold);
         TestExecutor executor = new TestExecutor(selector);
         Config config = new Config(pathHandler.getRootPath(), metricNames);
         MetricMeasure measure = new MetricMeasure(path + "src/main/", riskMetrics);
@@ -55,9 +56,12 @@ public class Runner {
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
-        Map<String, List<Issue>> issue = issueMeasure.getIssuesByClass();
+        issueMeasure.initIssuesByClass();
+        Map<String, List<Issue>> issues = issueMeasure.getIssues();
+        Map<String, List<Issue>> testIssues = issueMeasure.getTestIssues();
 
-        selector.determineClassesToTest(risk, testRisk, changedFiles, issue);
+        selector.determineClassesToTest(risk, issues);
+        selector.determineTestsToRun(testRisk, testIssues);
 
         executor.executeTests();
     }
