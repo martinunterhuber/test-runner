@@ -1,5 +1,8 @@
 package at.unterhuber.test_runner;
 
+import net.sourceforge.pmd.Report;
+import net.sourceforge.pmd.RuleViolation;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +43,12 @@ public class Runner {
         MetricMeasure testMeasure = new MetricMeasure(path + "src/test/", testRiskMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
+        MyPMD myPMD = new MyPMD(pathHandler);
+
+        Report report = myPMD.generateReport();
+        for (RuleViolation violation : report.getViolations()) {
+            System.out.println(violation.getRule().getPriority());
+        }
 
         config.loadConfig();
 

@@ -16,6 +16,7 @@ dependencies {
     implementation 'org.junit.platform:junit-platform-launcher:1.8.2'
     implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.23.1'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'net.sourceforge.pmd:pmd-java:6.41.0'
 }
 
 test {

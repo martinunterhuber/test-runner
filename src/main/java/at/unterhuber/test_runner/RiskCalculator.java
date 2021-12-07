@@ -1,6 +1,8 @@
 package at.unterhuber.test_runner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class RiskCalculator {
     private final MetricMeasure measure;
