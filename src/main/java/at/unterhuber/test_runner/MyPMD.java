@@ -6,15 +6,24 @@ import net.sourceforge.pmd.util.datasource.DataSource;
 
 import java.io.IOException;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MyPMD {
     private final ProjectPathHandler pathHandler;
 
     public MyPMD(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
+    }
+
+    public Map<String, List<Issue>> getIssuesByClass() throws IOException {
+        Report report = generateReport();
+        Map<String, List<Issue>> issuesByClass = new HashMap<>();
+        for (RuleViolation violation : report.getViolations()) {
+            List<Issue> issues = issuesByClass.getOrDefault(violation.getClassName(), new ArrayList<>());
+            issues.add(new Issue(violation));
+            issuesByClass.put(violation.getClassName(), issues);
+        }
+        return issuesByClass;
     }
 
     public Report generateReport() throws IOException {

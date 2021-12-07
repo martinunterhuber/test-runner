@@ -25,7 +25,7 @@ public class TestSelector {
         this.testMetricThreshold = testMetricThreshold;
     }
 
-    public void determineClassesToTest(HashMap<String, Double> risk, HashMap<String, Double> testRisk, String[] changedFiles, Map<String, List<SonarIssue>> issues) {
+    public void determineClassesToTest(HashMap<String, Double> risk, HashMap<String, Double> testRisk, String[] changedFiles, Map<String, List<Issue>> issues) {
         Set<String> classesToTest1 = getClassesToTestByMetric(risk);
         Set<String> classesToTest2 = getClassesToTestByIssues(issues);
         testClassesToRun.addAll(getTestClassesToRun(testRisk));
@@ -42,10 +42,15 @@ public class TestSelector {
                 .collect(Collectors.toList());
     }
 
-    private Set<String> getClassesToTestByIssues(Map<String, List<SonarIssue>> issues) {
+    private Set<String> getClassesToTestByIssues(Map<String, List<Issue>> issues) {
         return issues.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue().stream().map(SonarIssue::computeRisk).reduce(Integer::sum).orElse(0) > issueThreshold)
+                .filter(entry -> entry
+                        .getValue()
+                        .stream()
+                        .map(Issue::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0) > issueThreshold)
                 .map(Map.Entry::getKey)
                 .map(Path::of)
                 .map(loader::getFullClassNameFrom)

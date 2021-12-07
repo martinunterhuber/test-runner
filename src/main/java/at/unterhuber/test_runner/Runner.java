@@ -1,12 +1,6 @@
 package at.unterhuber.test_runner;
 
-import net.sourceforge.pmd.Report;
-import net.sourceforge.pmd.RuleViolation;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class Runner {
@@ -27,7 +21,6 @@ public class Runner {
     private static final double metricThreshold = 3.0;
     private static final double testMetricThreshold = 1.5;
     private static final int issueThreshold = 20;
-    private static final String projectName = "martinunterhuber_test-project";
 
     public static void main(String[] args) throws Throwable {
         String path = args[0];
@@ -35,7 +28,6 @@ public class Runner {
         RiskMetric[] riskMetrics = Arrays.stream(metricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
         RiskMetric[] testRiskMetrics = Arrays.stream(testMetricNames).map(RiskMetric::new).toArray(RiskMetric[]::new);
 
-        SonarIssueParser issueParser = new SonarIssueParser(projectName);
         ProjectPathHandler pathHandler = new GradlePathHandler(path);
         FileClassLoader loader = new FileClassLoader(pathHandler);
         TestSelector selector = new TestSelector(loader, metricThreshold, testMetricThreshold, issueThreshold);
@@ -46,11 +38,6 @@ public class Runner {
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         MyPMD myPMD = new MyPMD(pathHandler);
-
-        Report report = myPMD.generateReport();
-        for (RuleViolation violation : report.getViolations()) {
-            System.out.println(violation.getRule().getPriority());
-        }
 
         config.loadConfig();
 
@@ -68,9 +55,9 @@ public class Runner {
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
-        Map<String, List<SonarIssue>> issues = issueParser.getIssuesByClass();
+        Map<String, List<Issue>> issue = myPMD.getIssuesByClass();
 
-        selector.determineClassesToTest(risk, testRisk, changedFiles, issues);
+        selector.determineClassesToTest(risk, testRisk, changedFiles, issue);
 
         executor.executeTests();
     }
