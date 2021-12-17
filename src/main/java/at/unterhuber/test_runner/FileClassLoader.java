@@ -53,7 +53,6 @@ public class FileClassLoader {
                 .map(this::getFullTestClassNameFrom)
                 .map(className -> {
                     try {
-                        System.out.println(className);
                         return classLoader.loadClass(className);
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();

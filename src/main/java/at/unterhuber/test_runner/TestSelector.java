@@ -104,8 +104,10 @@ public class TestSelector {
     }
 
     public List<DiscoverySelector> selectTestClasses() {
-        System.out.println(Arrays.toString(classesToTest.toArray()));
-        System.out.println(Arrays.toString(testClassesToRun.toArray()));
+        System.out.println("Risky classes: " + classesToTest);
+        System.out.println("Risky tests: " + testClassesToRun);
+
+        // TODO: use the result of DependencyResolver again
         List<Field> fields = loader.getTestFields();
         Set<DiscoverySelector> selectors = fields.stream()
                 .filter(field -> classesToTest.contains(field.getType().getCanonicalName()))
@@ -117,7 +119,7 @@ public class TestSelector {
                         .map(DiscoverySelectors::selectClass)
                         .collect(Collectors.toSet())
         );
-        System.out.println(Arrays.toString(selectors.toArray()));
+        System.out.println("Selected tests: " + selectors);
         return new ArrayList<>(selectors);
     }
 }

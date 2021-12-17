@@ -18,11 +18,10 @@ public class RiskCalculator {
         for (List<Measurement> measurements : measure.getMeasurements().values()) {
             for (Measurement measurement : measurements) {
                 double value = risk.getOrDefault(measurement.getClassName(), 0.0);
-                System.out.println(measurement);
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
-        System.out.println(Arrays.toString(risk.values().toArray()));
+        System.out.println("Risks: " + risk.values());
         return risk;
     }
 }

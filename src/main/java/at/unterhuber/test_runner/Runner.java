@@ -41,7 +41,7 @@ public class Runner {
                 .stream(System.getenv("DIFF").split(" "))
                 .map(pathHandler::pathToFullClassName)
                 .toList();
-        System.out.println(changedFiles);
+        System.out.println("Changed files: " + changedFiles);
 
         config.loadConfig();
 
@@ -50,11 +50,11 @@ public class Runner {
 
         measure.measure();
         measure.initMeasurements();
-        measure.printSelectedMetrics();
+        // measure.printSelectedMetrics();
 
         testMeasure.measure();
         testMeasure.initMeasurements();
-        testMeasure.printSelectedMetrics();
+        // testMeasure.printSelectedMetrics();
 
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();

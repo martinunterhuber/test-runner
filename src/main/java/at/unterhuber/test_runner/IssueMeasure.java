@@ -7,11 +7,13 @@ import net.sourceforge.pmd.util.datasource.DataSource;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IssueMeasure {
     private final ProjectPathHandler pathHandler;
-    private Map<String, List<Issue>> issues = new HashMap<>();
-    private Map<String, List<Issue>> testIssues = new HashMap<>();
+    private final Map<String, List<Issue>> issues = new HashMap<>();
+    private final Map<String, List<Issue>> testIssues = new HashMap<>();
 
     public IssueMeasure(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -46,6 +48,7 @@ public class IssueMeasure {
         List<RuleSet> ruleSets = ruleSetLoader.loadFromResources(Arrays.asList(configuration.getRuleSets().split(",")));
         List<DataSource> files = PMD.getApplicableFiles(configuration, Collections.singleton(LanguageRegistry.getDefaultLanguage()));
         try {
+            Logger.getLogger("").setLevel(Level.WARNING);
             return PMD.processFiles(configuration, ruleSets, files, Collections.emptyList());
         } finally {
             ClassLoader auxiliaryClassLoader = configuration.getClassLoader();
