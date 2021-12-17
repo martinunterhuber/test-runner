@@ -20,4 +20,25 @@ public interface ProjectPathHandler {
     boolean isMainSourcePath(String absolutePath);
 
     boolean isTestSourcePath(String absolutePath);
+
+    default String pathToFullClassName(String filePath) {
+        Path path = getRootPath().resolve(filePath);
+        Path mainPath;
+        Path testPath;
+        String extension;
+        if (filePath.endsWith(".java")) {
+            mainPath = getMainSourcePath();
+            testPath = getTestSourcePath();
+            extension = ".java";
+        } else {
+            mainPath = getMainClassPath();
+            testPath = getTestClassPath();
+            extension = ".class";
+        }
+        String relativePath = mainPath.relativize(path).toString();
+        if (relativePath.startsWith("../")) {
+            relativePath = testPath.relativize(path).toString();
+        }
+        return relativePath.replace(extension, "").replace("/", ".");
+    }
 }

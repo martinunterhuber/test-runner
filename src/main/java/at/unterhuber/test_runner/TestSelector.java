@@ -3,6 +3,7 @@ package at.unterhuber.test_runner;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
@@ -12,29 +13,28 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 public class TestSelector {
     private final FileClassLoader loader;
-    private final Set<String> changeSet;
+    private Set<String> changeSet;
     private final Config config;
+    private final DependencyResolver resolver;
 
     private Set<String> classesToTest = new HashSet<>();
     private Set<String> testClassesToRun = new HashSet<>();
 
-    public TestSelector(FileClassLoader loader, String[] changedFiles, Config config) {
+    public TestSelector(FileClassLoader loader, Config config, DependencyResolver resolver) {
         this.loader = loader;
-        this.changeSet = getChangeSet(changedFiles);
+        this.changeSet = null;
         this.config = config;
+        this.resolver = resolver;
     }
 
-    private Set<String> getChangeSet(String[] changedFiles) {
-        return Arrays
-                .stream(changedFiles)
-                .map(file -> loader.getFullClassNameFrom(Path.of(file)))
-                .collect(Collectors.toSet());
+    public void determineChangeSet(List<String> changedFiles) throws IOException {
+        changeSet = resolver.resolveDependenciesFor(changedFiles);
     }
 
     public void determineClassesToTest(HashMap<String, Double> risk, Map<String, List<Issue>> issues) {
         classesToTest.addAll(getClassesToTestByMetric(risk));
         classesToTest.addAll(getClassesToTestByIssues(issues));
-        // excludeUnchanged();
+        excludeUnchanged();
     }
 
     private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
@@ -60,7 +60,7 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    private void excludeUnchanged(String[] changedFiles) {
+    private void excludeUnchanged() {
         classesToTest = classesToTest
                 .stream()
                 .filter(changeSet::contains)
@@ -70,7 +70,7 @@ public class TestSelector {
     public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues) {
         testClassesToRun.addAll(getTestClassesToRunByMetric(testRisk));
         testClassesToRun.addAll(getTestClassesToRunByIssues(testIssues));
-        // excludeUnchangedTests();
+        excludeUnchangedTests();
     }
 
     private Set<String> getTestClassesToRunByMetric(HashMap<String, Double> risk) {
@@ -96,7 +96,7 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    private void excludeUnchangedTests(String[] changedFiles) {
+    private void excludeUnchangedTests() {
         testClassesToRun = testClassesToRun
                 .stream()
                 .filter(changeSet::contains)

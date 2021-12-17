@@ -20,21 +20,28 @@ public class Runner {
     };
 
     public static void main(String[] args) throws Throwable {
-        String path = args[0];
-        String[] changedFiles = System.getenv("DIFF").split(" ");
+        String rootPath = args[0];
+
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
-        ProjectPathHandler pathHandler = new GradlePathHandler(path);
+        ProjectPathHandler pathHandler = new GradlePathHandler(rootPath);
         Config config = new Config(pathHandler.getRootPath());
         FileClassLoader loader = new FileClassLoader(pathHandler);
-        TestSelector selector = new TestSelector(loader, changedFiles, config);
+        DependencyResolver resolver = new DependencyResolver(loader, pathHandler);
+        TestSelector selector = new TestSelector(loader, config, resolver);
         TestExecutor executor = new TestExecutor(selector);
         MetricMeasure measure = new MetricMeasure(pathHandler.getMainSourcePath().toString(), metrics);
         MetricMeasure testMeasure = new MetricMeasure(pathHandler.getTestSourcePath().toString(), testMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
+
+        List<String> changedFiles = Arrays
+                .stream(System.getenv("DIFF").split(" "))
+                .map(pathHandler::pathToFullClassName)
+                .toList();
+        System.out.println(changedFiles);
 
         config.loadConfig();
 
@@ -56,6 +63,7 @@ public class Runner {
         Map<String, List<Issue>> issues = issueMeasure.getIssues();
         Map<String, List<Issue>> testIssues = issueMeasure.getTestIssues();
 
+        selector.determineChangeSet(changedFiles);
         selector.determineClassesToTest(risk, issues);
         selector.determineTestsToRun(testRisk, testIssues);
 
