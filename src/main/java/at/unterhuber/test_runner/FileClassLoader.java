@@ -1,20 +1,20 @@
 package at.unterhuber.test_runner;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FileClassLoader {
     private final ProjectPathHandler pathHandler;
     private ClassLoader classLoader;
     private List<? extends Class<?>> testClasses;
+    private Set<String> testClassesNames;
 
     public FileClassLoader(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -47,10 +47,14 @@ public class FileClassLoader {
     }
 
     public void loadTestClasses() throws IOException {
-        testClasses = Files
+        testClassesNames = Files
                 .walk(pathHandler.getTestSourcePath())
                 .filter(Files::isRegularFile)
                 .map(this::getFullTestClassNameFrom)
+                .collect(Collectors.toSet());
+
+        testClasses = testClassesNames
+                .stream()
                 .map(className -> {
                     try {
                         return classLoader.loadClass(className);
@@ -65,11 +69,8 @@ public class FileClassLoader {
         return testClasses;
     }
 
-    public List<Field> getTestFields() {
-        return testClasses
-                .stream()
-                .flatMap(clazz -> Arrays.stream(clazz.getDeclaredFields()))
-                .collect(Collectors.toList());
+    public boolean isTestClass(String clazz) {
+        return testClassesNames.contains(clazz);
     }
 
     public ClassLoader getClassLoader() {

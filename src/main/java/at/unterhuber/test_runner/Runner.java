@@ -1,6 +1,10 @@
 package at.unterhuber.test_runner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class Runner {
@@ -40,7 +44,7 @@ public class Runner {
         List<String> changedFiles = Arrays
                 .stream(System.getenv("DIFF").split(" "))
                 .map(pathHandler::pathToFullClassName)
-                .toList();
+                .collect(Collectors.toList());
         System.out.println("Changed files: " + changedFiles);
 
         config.loadConfig();

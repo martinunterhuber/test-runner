@@ -1,20 +1,15 @@
+// Source: https://github.com/llbit/ow2-asm/blob/master/examples/dependencies/src/org/objectweb/asm/depend/DependencyVisitor.java
+
 package at.unterhuber.test_runner;
+
+import org.objectweb.asm.*;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Handle;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.TypePath;
-import org.objectweb.asm.signature.SignatureReader;
-import org.objectweb.asm.signature.SignatureVisitor;
 
 public class DependencyVisitor extends ClassVisitor {
     Set<String> packages = new HashSet<String>();
@@ -23,16 +18,16 @@ public class DependencyVisitor extends ClassVisitor {
 
     Map<String, Integer> current;
 
+    public DependencyVisitor() {
+        super(Opcodes.ASM5);
+    }
+
     public Map<String, Map<String, Integer>> getGlobals() {
         return groups;
     }
 
     public Set<String> getPackages() {
         return packages;
-    }
-
-    public DependencyVisitor() {
-        super(Opcodes.ASM5);
     }
 
     // ClassVisitor
@@ -92,6 +87,85 @@ public class DependencyVisitor extends ClassVisitor {
         }
         addInternalNames(exceptions);
         return new MethodDependencyVisitor();
+    }
+
+    private String getGroupKey(String name) {
+        packages.add(name.replace("/", "."));
+        return name;
+    }
+
+    private void addName(final String name) {
+        if (name == null) {
+            return;
+        }
+        String p = getGroupKey(name);
+        if (current.containsKey(p)) {
+            current.put(p, current.get(p) + 1);
+        } else {
+            current.put(p, 1);
+        }
+    }
+
+    void addInternalName(final String name) {
+        addType(Type.getObjectType(name));
+    }
+
+    private void addInternalNames(final String[] names) {
+        for (int i = 0; names != null && i < names.length; i++) {
+            addInternalName(names[i]);
+        }
+    }
+
+    // ---------------------------------------------
+
+    void addDesc(final String desc) {
+        addType(Type.getType(desc));
+    }
+
+    void addMethodDesc(final String desc) {
+        addType(Type.getReturnType(desc));
+        Type[] types = Type.getArgumentTypes(desc);
+        for (int i = 0; i < types.length; i++) {
+            addType(types[i]);
+        }
+    }
+
+    void addType(final Type t) {
+        switch (t.getSort()) {
+            case Type.ARRAY:
+                addType(t.getElementType());
+                break;
+            case Type.OBJECT:
+                addName(t.getInternalName());
+                break;
+            case Type.METHOD:
+                addMethodDesc(t.getDescriptor());
+                break;
+        }
+    }
+
+    private void addSignature(final String signature) {
+        if (signature != null) {
+            new SignatureReader(signature)
+                    .accept(new SignatureDependencyVisitor());
+        }
+    }
+
+    void addTypeSignature(final String signature) {
+        if (signature != null) {
+            new SignatureReader(signature)
+                    .acceptType(new SignatureDependencyVisitor());
+        }
+    }
+
+    void addConstant(final Object cst) {
+        if (cst instanceof Type) {
+            addType((Type) cst);
+        } else if (cst instanceof Handle) {
+            Handle h = (Handle) cst;
+            addInternalName(h.getOwner());
+            addMethodDesc(h.getDesc());
+        }
     }
 
     class AnnotationDependencyVisitor extends AnnotationVisitor {
@@ -275,85 +349,6 @@ public class DependencyVisitor extends ClassVisitor {
         public void visitInnerClassType(final String name) {
             signatureClassName = signatureClassName + "$" + name;
             addInternalName(signatureClassName);
-        }
-    }
-
-    // ---------------------------------------------
-
-    private String getGroupKey(String name) {
-        packages.add(name.replace("/", "."));
-        return name;
-    }
-
-    private void addName(final String name) {
-        if (name == null) {
-            return;
-        }
-        String p = getGroupKey(name);
-        if (current.containsKey(p)) {
-            current.put(p, current.get(p) + 1);
-        } else {
-            current.put(p, 1);
-        }
-    }
-
-    void addInternalName(final String name) {
-        addType(Type.getObjectType(name));
-    }
-
-    private void addInternalNames(final String[] names) {
-        for (int i = 0; names != null && i < names.length; i++) {
-            addInternalName(names[i]);
-        }
-    }
-
-    void addDesc(final String desc) {
-        addType(Type.getType(desc));
-    }
-
-    void addMethodDesc(final String desc) {
-        addType(Type.getReturnType(desc));
-        Type[] types = Type.getArgumentTypes(desc);
-        for (int i = 0; i < types.length; i++) {
-            addType(types[i]);
-        }
-    }
-
-    void addType(final Type t) {
-        switch (t.getSort()) {
-            case Type.ARRAY:
-                addType(t.getElementType());
-                break;
-            case Type.OBJECT:
-                addName(t.getInternalName());
-                break;
-            case Type.METHOD:
-                addMethodDesc(t.getDescriptor());
-                break;
-        }
-    }
-
-    private void addSignature(final String signature) {
-        if (signature != null) {
-            new SignatureReader(signature)
-                    .accept(new SignatureDependencyVisitor());
-        }
-    }
-
-    void addTypeSignature(final String signature) {
-        if (signature != null) {
-            new SignatureReader(signature)
-                    .acceptType(new SignatureDependencyVisitor());
-        }
-    }
-
-    void addConstant(final Object cst) {
-        if (cst instanceof Type) {
-            addType((Type) cst);
-        } else if (cst instanceof Handle) {
-            Handle h = (Handle) cst;
-            addInternalName(h.getOwner());
-            addMethodDesc(h.getDesc());
         }
     }
 }

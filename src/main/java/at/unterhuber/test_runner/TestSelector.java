@@ -4,19 +4,15 @@ import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
-
 public class TestSelector {
     private final FileClassLoader loader;
-    private Set<String> changeSet;
     private final Config config;
     private final DependencyResolver resolver;
-
+    private Set<String> changeSet;
     private Set<String> classesToTest = new HashSet<>();
     private Set<String> testClassesToRun = new HashSet<>();
 
@@ -103,16 +99,17 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    public List<DiscoverySelector> selectTestClasses() {
+    public List<DiscoverySelector> selectTestClasses() throws IOException {
         System.out.println("Risky classes: " + classesToTest);
         System.out.println("Risky tests: " + testClassesToRun);
 
-        // TODO: use the result of DependencyResolver again
-        List<Field> fields = loader.getTestFields();
-        Set<DiscoverySelector> selectors = fields.stream()
-                .filter(field -> classesToTest.contains(field.getType().getCanonicalName()))
-                .map(field -> selectClass(field.getDeclaringClass()))
+        Set<DiscoverySelector> selectors = resolver
+                .resolveDependenciesFor(new ArrayList<>(classesToTest))
+                .stream()
+                .filter(loader::isTestClass)
+                .map(DiscoverySelectors::selectClass)
                 .collect(Collectors.toSet());
+
         selectors.addAll(
                 testClassesToRun
                         .stream()

@@ -9,6 +9,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
@@ -20,7 +21,7 @@ public class TestExecutor {
         this.selector = selector;
     }
 
-    public void executeTests() {
+    public void executeTests() throws IOException {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(selector.selectTestClasses())
                 .filters(includeClassNamePatterns(".*"))

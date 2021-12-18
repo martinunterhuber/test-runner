@@ -8,10 +8,12 @@ import org.objectweb.asm.ClassReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DependencyResolver {
     private final FileClassLoader loader;
     private final ProjectPathHandler pathHandler;
+    private Graph<String, DefaultEdge> dependencyGraph;
 
     public DependencyResolver(FileClassLoader loader, ProjectPathHandler pathHandler) {
         this.loader = loader;
@@ -19,17 +21,19 @@ public class DependencyResolver {
     }
 
     public Set<String> resolveDependenciesFor(List<String> classes) throws IOException {
-        List<String> classFilePaths = getAllClassFilePaths();
-        Graph<String, DefaultEdge> graph = buildDependencyGraph(classFilePaths);
+        if (dependencyGraph == null) {
+            List<String> classFilePaths = getAllClassFilePaths();
+            buildDependencyGraph(classFilePaths);
+        }
 
         Set<String> visited = new HashSet<>();
         Queue<String> toVisit = new ArrayDeque<>(classes);
 
-        while(!toVisit.isEmpty()) {
+        while (!toVisit.isEmpty()) {
             String current = toVisit.remove();
             visited.add(current);
-            for (DefaultEdge edge: graph.outgoingEdgesOf(current)) {
-                String target = graph.getEdgeTarget(edge);
+            for (DefaultEdge edge : dependencyGraph.outgoingEdgesOf(current)) {
+                String target = dependencyGraph.getEdgeTarget(edge);
                 if (!visited.contains(target)) {
                     toVisit.add(target);
                 }
@@ -40,8 +44,8 @@ public class DependencyResolver {
         return visited;
     }
 
-    private Graph<String, DefaultEdge> buildDependencyGraph(List<String> classFilePaths) throws IOException {
-        Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
+    private void buildDependencyGraph(List<String> classFilePaths) throws IOException {
+        dependencyGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
         for (String classFilePath : classFilePaths) {
             DependencyVisitor visitor = new DependencyVisitor();
@@ -51,17 +55,16 @@ public class DependencyResolver {
                     .getPackages()
                     .stream()
                     .filter(name -> name.startsWith("at.unterhuber.test"))
-                    .toList();
+                    .collect(Collectors.toList());
             for (String dependency : dependencies) {
                 String temp = classFilePath.replace(".class", "").replace("/", ".");
-                graph.addVertex(temp);
-                graph.addVertex(dependency);
+                dependencyGraph.addVertex(temp);
+                dependencyGraph.addVertex(dependency);
                 if (!temp.equals(dependency)) {
-                    graph.addEdge(dependency, temp);
+                    dependencyGraph.addEdge(dependency, temp);
                 }
             }
         }
-        return graph;
     }
 
     private List<String> getAllClassFilePaths() throws IOException {
@@ -73,6 +76,6 @@ public class DependencyResolver {
                         relativePath = pathHandler.getTestClassPath().relativize(path).toString();
                     }
                     return relativePath;
-                }).toList();
+                }).collect(Collectors.toList());
     }
 }
