@@ -1,5 +1,6 @@
 package at.unterhuber.test_runner;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +23,11 @@ public class Config {
     }
 
     public void loadConfig() {
-        try (InputStream input = new FileInputStream(path.resolve("test.properties").toFile())) {
+        File file = path.resolve("test.properties").toFile();
+        if (!file.exists()) {
+            file = new File("test.properties");
+        }
+        try (InputStream input = new FileInputStream(file)) {
             Properties prop = new Properties();
             prop.load(input);
             for (String property : prop.stringPropertyNames()) {
