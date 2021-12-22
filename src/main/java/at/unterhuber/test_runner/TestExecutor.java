@@ -34,6 +34,8 @@ public class TestExecutor {
             TestPlan testPlan = launcher.discover(request);
             launcher.execute(testPlan);
             launcher.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
 
         TestExecutionSummary summary = listener.getSummary();
@@ -41,10 +43,11 @@ public class TestExecutor {
 
         if (summary.getTestsFailedCount() > 0) {
             for (TestExecutionSummary.Failure failure : summary.getFailures()) {
-                failure.getException().printStackTrace();
-                System.err.println();
+                System.out.println(failure.getTestIdentifier());
+                failure.getException().printStackTrace(System.out);
+                System.out.println();
             }
-            System.err.println(summary.getTestsStartedCount() + " tests started, " + summary.getTestsFailedCount() + " failed");
+            System.out.println(summary.getTestsStartedCount() + " tests started, " + summary.getTestsFailedCount() + " failed");
             throw new RuntimeException("Some tests failed!");
         }
     }
