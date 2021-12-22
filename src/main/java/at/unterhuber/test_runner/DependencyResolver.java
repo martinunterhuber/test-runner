@@ -54,11 +54,11 @@ public class DependencyResolver {
             List<String> dependencies = visitor
                     .getPackages()
                     .stream()
-                    .filter(name -> name.startsWith("at.unterhuber.test"))
+                    .filter(name -> name.startsWith("org.apache.commons.cli"))
                     .collect(Collectors.toList());
+            String temp = classFilePath.replace(".class", "").replace("/", ".");
+            dependencyGraph.addVertex(temp);
             for (String dependency : dependencies) {
-                String temp = classFilePath.replace(".class", "").replace("/", ".");
-                dependencyGraph.addVertex(temp);
                 dependencyGraph.addVertex(dependency);
                 if (!temp.equals(dependency)) {
                     dependencyGraph.addEdge(dependency, temp);
@@ -70,6 +70,7 @@ public class DependencyResolver {
     private List<String> getAllClassFilePaths() throws IOException {
         return Files.walk(pathHandler.getClassPath())
                 .filter(Files::isRegularFile)
+                .filter(path -> path.toString().endsWith(".class"))
                 .map(path -> {
                     String relativePath = pathHandler.getMainClassPath().relativize(path).toString();
                     if (relativePath.startsWith("../")) {
