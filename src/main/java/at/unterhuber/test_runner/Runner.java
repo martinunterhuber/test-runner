@@ -1,9 +1,8 @@
 package at.unterhuber.test_runner;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,7 +28,14 @@ public class Runner {
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
-        ProjectPathHandler pathHandler = new GradlePathHandler(rootPath);
+        ProjectPathHandler pathHandler;
+        if (Files.exists(Path.of(rootPath).resolve("target"))) {
+            System.out.println("Inferred Build Tool: Maven");
+            pathHandler = new MavenPathHandler(rootPath);
+        } else {
+            System.out.println("Inferred Build Tool: Gradle");
+            pathHandler = new GradlePathHandler(rootPath);
+        }
         Config config = new Config(pathHandler.getRootPath());
         FileClassLoader loader = new FileClassLoader(pathHandler);
         DependencyResolver resolver = new DependencyResolver(loader, pathHandler);
