@@ -47,11 +47,16 @@ public class Runner {
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
 
-        List<String> changedFiles = Arrays
-                .stream(System.getenv("DIFF").split(" "))
-                .map(pathHandler::pathToFullClassName)
-                .collect(Collectors.toList());
-        System.out.println("Changed files: " + changedFiles);
+        String diff = System.getenv("DIFF");
+        boolean scanAll = diff == null;
+        List<String> changedFiles = new ArrayList<>();
+        if (!scanAll) {
+            changedFiles = Arrays
+                    .stream(diff.split(" "))
+                    .map(pathHandler::pathToFullClassName)
+                    .collect(Collectors.toList());
+            System.out.println("Changed files: " + changedFiles);
+        }
 
         config.loadConfig();
 
@@ -73,7 +78,10 @@ public class Runner {
         Map<String, List<Issue>> issues = issueMeasure.getIssues();
         Map<String, List<Issue>> testIssues = issueMeasure.getTestIssues();
 
-        selector.determineChangeSet(changedFiles);
+        if (!scanAll) {
+            selector.determineChangeSet(changedFiles);
+        }
+
         selector.determineClassesToTest(risk, issues);
         selector.determineTestsToRun(testRisk, testIssues);
 

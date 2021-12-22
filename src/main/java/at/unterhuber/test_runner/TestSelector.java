@@ -30,7 +30,9 @@ public class TestSelector {
     public void determineClassesToTest(HashMap<String, Double> risk, Map<String, List<Issue>> issues) {
         classesToTest.addAll(getClassesToTestByMetric(risk));
         classesToTest.addAll(getClassesToTestByIssues(issues));
-        excludeUnchanged();
+        if (changeSet != null) {
+            excludeUnchanged();
+        }
     }
 
     private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
@@ -66,7 +68,9 @@ public class TestSelector {
     public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues) {
         testClassesToRun.addAll(getTestClassesToRunByMetric(testRisk));
         testClassesToRun.addAll(getTestClassesToRunByIssues(testIssues));
-        excludeUnchangedTests();
+        if (changeSet != null) {
+            excludeUnchangedTests();
+        }
     }
 
     private Set<String> getTestClassesToRunByMetric(HashMap<String, Double> risk) {
