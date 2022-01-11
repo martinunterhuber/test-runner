@@ -58,11 +58,15 @@ public class FileClassLoader {
                 .map(className -> {
                     try {
                         return classLoader.loadClass(className);
-                    } catch (ClassNotFoundException e) {
+                    } catch (NoClassDefFoundError | ClassNotFoundException e) {
                         e.printStackTrace();
                         return null;
                     }
                 }).collect(Collectors.toList());
+    }
+
+    public Set<String> getTestClassesNames() {
+        return testClassesNames;
     }
 
     public List<? extends Class<?>> getTestClasses() {

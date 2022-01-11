@@ -19,7 +19,7 @@ public class DependencyVisitor extends ClassVisitor {
     Map<String, Integer> current;
 
     public DependencyVisitor() {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM9);
     }
 
     public Map<String, Map<String, Integer>> getGlobals() {
@@ -171,7 +171,7 @@ public class DependencyVisitor extends ClassVisitor {
     class AnnotationDependencyVisitor extends AnnotationVisitor {
 
         public AnnotationDependencyVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM9);
         }
 
         @Override
@@ -203,7 +203,7 @@ public class DependencyVisitor extends ClassVisitor {
     class FieldDependencyVisitor extends FieldVisitor {
 
         public FieldDependencyVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM9);
         }
 
         @Override
@@ -224,7 +224,7 @@ public class DependencyVisitor extends ClassVisitor {
     class MethodDependencyVisitor extends MethodVisitor {
 
         public MethodDependencyVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM9);
         }
 
         @Override
@@ -336,7 +336,7 @@ public class DependencyVisitor extends ClassVisitor {
         String signatureClassName;
 
         public SignatureDependencyVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM9);
         }
 
         @Override

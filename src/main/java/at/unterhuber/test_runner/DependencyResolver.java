@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 public class DependencyResolver {
     private final FileClassLoader loader;
     private final ProjectPathHandler pathHandler;
+    private final String packageName;
     private Graph<String, DefaultEdge> dependencyGraph;
 
-    public DependencyResolver(FileClassLoader loader, ProjectPathHandler pathHandler) {
+    public DependencyResolver(FileClassLoader loader, ProjectPathHandler pathHandler, String packageName) {
         this.loader = loader;
         this.pathHandler = pathHandler;
+        this.packageName = packageName;
     }
 
     public Set<String> resolveDependenciesFor(List<String> classes) throws IOException {
@@ -54,7 +56,7 @@ public class DependencyResolver {
             List<String> dependencies = visitor
                     .getPackages()
                     .stream()
-                    .filter(name -> name.startsWith("org.apache.commons.cli"))
+                    .filter(name -> name.startsWith(packageName))
                     .collect(Collectors.toList());
             String temp = classFilePath.replace(".class", "").replace("/", ".");
             dependencyGraph.addVertex(temp);
