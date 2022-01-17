@@ -47,6 +47,8 @@ public class Runner {
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
+        BugsMeasure bugsMeasure = new BugsMeasure(pathHandler);
+        bugsMeasure.find();
 
         String diff = System.getenv("DIFF");
         boolean scanAll = diff == null;
