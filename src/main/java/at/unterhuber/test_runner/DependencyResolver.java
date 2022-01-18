@@ -46,6 +46,36 @@ public class DependencyResolver {
         return visited;
     }
 
+    public Set<String> resolveDependenciesFor(List<String> classes, int maxDepth) throws IOException {
+        if (dependencyGraph == null) {
+            List<String> classFilePaths = getAllClassFilePaths();
+            buildDependencyGraph(classFilePaths);
+        }
+
+        Set<String> visited = new HashSet<>();
+
+        for (String clazz : classes) {
+            visited.add(clazz);
+            resolveDependenciesRecursive(clazz, visited, 0, maxDepth);
+        }
+        System.out.println("Changed+dependent classes: " + visited);
+
+        return visited;
+    }
+
+    private void resolveDependenciesRecursive(String clazz, Set<String> visited, int depth, int maxDepth) {
+        if (maxDepth <= depth) {
+            return;
+        }
+        for (DefaultEdge edge : dependencyGraph.outgoingEdgesOf(clazz)) {
+            String target = dependencyGraph.getEdgeTarget(edge);
+            if (!visited.contains(target)) {
+                visited.add(target);
+                resolveDependenciesRecursive(target, visited, depth + 1, maxDepth);
+            }
+        }
+    }
+
     private void buildDependencyGraph(List<String> classFilePaths) throws IOException {
         dependencyGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
 
