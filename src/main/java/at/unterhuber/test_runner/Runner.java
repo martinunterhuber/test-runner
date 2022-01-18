@@ -25,6 +25,7 @@ public class Runner {
     public static void main(String[] args) throws Throwable {
         String rootPath = args[0];
         String packageName = args[1];
+        String selfRootPath = args[2];
 
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
@@ -37,7 +38,7 @@ public class Runner {
             System.out.println("Inferred Build Tool: Gradle");
             pathHandler = new GradlePathHandler(rootPath);
         }
-        Config config = new Config(pathHandler.getRootPath());
+        Config config = new Config(pathHandler.getRootPath(), Path.of(selfRootPath));
         FileClassLoader loader = new FileClassLoader(pathHandler);
         DependencyResolver resolver = new DependencyResolver(loader, pathHandler, packageName);
         TestSelector selector = new TestSelector(loader, config, resolver);

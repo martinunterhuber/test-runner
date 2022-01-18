@@ -12,20 +12,22 @@ import java.util.Properties;
 public class Config {
     private final Map<String, Double> weights = new HashMap<>();
     private final Path path;
+    private final Path selfPath;
 
     private double metricThreshold;
     private double testMetricThreshold;
     private int issueThreshold;
     private int testIssueThreshold;
 
-    public Config(Path path) {
+    public Config(Path path, Path selfPath) {
         this.path = path;
+        this.selfPath = selfPath;
     }
 
     public void loadConfig() {
         File file = path.resolve("test.properties").toFile();
         if (!file.exists()) {
-            file = new File("test.properties");
+            file = selfPath.resolve("test.properties").toFile();
         }
         try (InputStream input = new FileInputStream(file)) {
             Properties prop = new Properties();
