@@ -10,9 +10,9 @@ public class Bug {
     }
 
     public int computeRisk() {
-        int priority = bug.getPriority();
+        int rank = bug.getBugRank();
 
-        // 1 (high priority) <= priority <= 20 (low priority)
-        return 20 - priority;
+        // 1 (high priority) <= rank <= 20 (low priority)
+        return 20 - rank;
     }
 }
