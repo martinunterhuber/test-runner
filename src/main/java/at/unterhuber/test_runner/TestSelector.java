@@ -132,8 +132,8 @@ public class TestSelector {
     }
 
     public List<DiscoverySelector> selectTestClasses() throws IOException {
-        System.out.println("Risky classes: " + classesToTest);
-        System.out.println("Risky tests: " + testClassesToRun);
+        System.out.println("Risky classes\n" + classesToTest + "\n");
+        System.out.println("Risky tests\n" + testClassesToRun + "\n");
 
         Set<DiscoverySelector> selectors = resolver
                 .resolveDependenciesFor(new ArrayList<>(classesToTest))
@@ -148,7 +148,7 @@ public class TestSelector {
                         .map(DiscoverySelectors::selectClass)
                         .collect(Collectors.toSet())
         );
-        System.out.println("Selected tests: " + selectors);
+        System.out.println("Selected tests\n" + selectors + "\n");
         return new ArrayList<>(selectors);
     }
 }

@@ -41,7 +41,7 @@ public class DependencyResolver {
                 }
             }
         }
-        System.out.println("Changed+dependent classes: " + visited);
+        System.out.println("Changed+dependent classes\n" + visited + "\n");
 
         return visited;
     }
@@ -58,7 +58,7 @@ public class DependencyResolver {
             visited.add(clazz);
             resolveDependenciesRecursive(clazz, visited, 0, maxDepth);
         }
-        System.out.println("Changed+dependent classes: " + visited);
+        System.out.println("Changed+dependent classes\n" + visited + "\n");
 
         return visited;
     }

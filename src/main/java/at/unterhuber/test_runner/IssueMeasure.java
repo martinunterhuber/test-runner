@@ -6,9 +6,11 @@ import net.sourceforge.pmd.util.datasource.DataSource;
 
 import java.io.IOException;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class IssueMeasure {
     private final ProjectPathHandler pathHandler;
@@ -32,6 +34,19 @@ public class IssueMeasure {
             issuesList.add(new Issue(violation));
             issuesByClass.put(violation.getFilename(), issuesList);
         }
+        printIssues(issues);
+        printIssues(testIssues);
+    }
+
+    public void printIssues(Map<String, List<Issue>> issues) {
+        System.out.println("Issues\n" + issues.entrySet()
+                .stream()
+                .map(entry -> new AbstractMap.SimpleEntry<>(pathHandler.pathToFullClassName(entry.getKey()), entry.getValue()
+                        .stream()
+                        .map(Issue::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) + "\n");
     }
 
     private Report generateReport() throws IOException {

@@ -34,10 +34,10 @@ public class Runner {
 
         ProjectPathHandler pathHandler;
         if (Files.exists(Path.of(rootPath).resolve("target"))) {
-            System.out.println("Inferred Build Tool: Maven");
+            System.out.println("Inferred Build Tool: Maven\n");
             pathHandler = new MavenPathHandler(rootPath);
         } else {
-            System.out.println("Inferred Build Tool: Gradle");
+            System.out.println("Inferred Build Tool: Gradle\n");
             pathHandler = new GradlePathHandler(rootPath);
         }
         Config config = new Config(pathHandler.getRootPath(), Path.of(selfRootPath));
@@ -60,7 +60,7 @@ public class Runner {
                     .stream(diff.split(" "))
                     .map(pathHandler::pathToFullClassName)
                     .collect(Collectors.toList());
-            System.out.println("Changed files: " + changedFiles);
+            System.out.println("Changed files\n" + changedFiles + "\n");
         }
 
         config.loadConfig();

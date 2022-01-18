@@ -20,7 +20,7 @@ public class RiskCalculator {
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
-        System.out.println("Risks: " + risk.values());
+        System.out.println("Risks\n" + risk + "\n");
         return risk;
     }
 }

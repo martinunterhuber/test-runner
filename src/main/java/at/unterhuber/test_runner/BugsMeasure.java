@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BugsMeasure {
     private final FindBugs2 findBugs2;
@@ -55,6 +56,20 @@ public class BugsMeasure {
             bugList.add(new Bug(bugInstance));
             bugsByClass.put(bugInstance.getPrimaryClass().getClassName(), bugList);
         }
+        System.out.println();
+        printBugs(bugs);
+        printBugs(testBugs);
+    }
+
+    public void printBugs(Map<String, List<Bug>> bugs) {
+        System.out.println("Bugs\n" + bugs.entrySet()
+                .stream()
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()
+                        .stream()
+                        .map(Bug::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) + "\n");
     }
 
     public Map<String, List<Bug>> getBugs() {
