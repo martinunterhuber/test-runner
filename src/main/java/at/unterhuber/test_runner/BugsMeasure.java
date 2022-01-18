@@ -10,16 +10,18 @@ import java.util.Objects;
 
 public class BugsMeasure {
     private final ProjectPathHandler pathHandler;
+    private final int priority;
 
-    public BugsMeasure(ProjectPathHandler pathHandler) {
+    public BugsMeasure(ProjectPathHandler pathHandler, int priority) {
         this.pathHandler = pathHandler;
+        this.priority = priority;
     }
 
     void find() throws IOException, InterruptedException {
         FindBugs2 findBugs = new FindBugs2();
         Project project = new Project();
         BugReporter bugReporter = new BugCollectionBugReporter(project);
-        bugReporter.setPriorityThreshold(Detector.NORMAL_PRIORITY);
+        bugReporter.setPriorityThreshold(priority);
         Files.walk(pathHandler.getMainClassPath()).forEach((file) -> project.addFile(file.toFile().getAbsolutePath()));
         findBugs.setProject(project);
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());

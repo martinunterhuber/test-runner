@@ -1,5 +1,7 @@
 package at.unterhuber.test_runner;
 
+import edu.umd.cs.findbugs.Priorities;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -48,7 +50,7 @@ public class Runner {
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
-        BugsMeasure bugsMeasure = new BugsMeasure(pathHandler);
+        BugsMeasure bugsMeasure = new BugsMeasure(pathHandler, Priorities.NORMAL_PRIORITY);
         bugsMeasure.find();
 
         String diff = System.getenv("DIFF");
