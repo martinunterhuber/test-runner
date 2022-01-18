@@ -44,7 +44,9 @@ task doCustomTest(type: TestTask) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'at.unterhuber.test_runner.Runner'
     doFirst {
-        args directory, packageName
+        def selfDirectory = workingDir
+        workingDir = directory
+        args directory, packageName, selfDirectory
     }
 }
 
