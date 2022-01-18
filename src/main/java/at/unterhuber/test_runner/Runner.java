@@ -50,8 +50,7 @@ public class Runner {
         RiskCalculator calculator = new RiskCalculator(measure, config);
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
-        BugsMeasure bugsMeasure = new BugsMeasure(pathHandler, Priorities.NORMAL_PRIORITY);
-        bugsMeasure.find();
+        BugsMeasure bugsMeasure = new BugsMeasure(pathHandler, loader, Priorities.NORMAL_PRIORITY);
 
         String diff = System.getenv("DIFF");
         boolean scanAll = diff == null;
@@ -80,16 +79,20 @@ public class Runner {
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
-        issueMeasure.initIssuesByClass();
+        issueMeasure.findIssues();
         Map<String, List<Issue>> issues = issueMeasure.getIssues();
         Map<String, List<Issue>> testIssues = issueMeasure.getTestIssues();
+
+        bugsMeasure.findBugs();
+        Map<String, List<Bug>> bugs = bugsMeasure.getBugs();
+        Map<String, List<Bug>> testBugs = bugsMeasure.getTestBugs();
 
         if (!scanAll) {
             selector.determineChangeSet(changedFiles);
         }
 
-        selector.determineClassesToTest(risk, issues);
-        selector.determineTestsToRun(testRisk, testIssues);
+        selector.determineClassesToTest(risk, issues, bugs);
+        selector.determineTestsToRun(testRisk, testIssues, testBugs);
 
         executor.executeTests();
     }

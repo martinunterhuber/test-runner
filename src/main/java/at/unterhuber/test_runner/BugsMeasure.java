@@ -5,31 +5,63 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.Objects;
+import java.nio.file.Path;
+import java.util.*;
 
 public class BugsMeasure {
+    private final FindBugs2 findBugs2;
+
     private final ProjectPathHandler pathHandler;
     private final int priority;
 
-    public BugsMeasure(ProjectPathHandler pathHandler, int priority) {
+    private final Map<String, List<Bug>> bugs = new HashMap<>();
+    private final Map<String, List<Bug>> testBugs = new HashMap<>();
+
+    private final FileClassLoader classLoader;
+
+    public BugsMeasure(ProjectPathHandler pathHandler, FileClassLoader loader, int priority) {
         this.pathHandler = pathHandler;
         this.priority = priority;
+        this.findBugs2 = new FindBugs2();
+        this.classLoader = loader;
     }
 
-    void find() throws IOException, InterruptedException {
-        FindBugs2 findBugs = new FindBugs2();
+    private void executeFindBugs() throws IOException, InterruptedException {
         Project project = new Project();
         BugReporter bugReporter = new BugCollectionBugReporter(project);
         bugReporter.setPriorityThreshold(priority);
         Files.walk(pathHandler.getMainClassPath()).forEach((file) -> project.addFile(file.toFile().getAbsolutePath()));
-        findBugs.setProject(project);
-        findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-        findBugs.setBugReporter(bugReporter);
+        Files.walk(pathHandler.getTestClassPath()).forEach((file) -> project.addFile(file.toFile().getAbsolutePath()));
+        findBugs2.setProject(project);
+        findBugs2.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+        findBugs2.setBugReporter(bugReporter);
         UserPreferences defaultUserPreferences = UserPreferences.createDefaultUserPreferences();
         defaultUserPreferences.setEffort(UserPreferences.EFFORT_MAX);
-        findBugs.setUserPreferences(defaultUserPreferences);
-        findBugs.execute();
-        System.out.println(Collections.unmodifiableCollection(Objects.requireNonNull(findBugs.getBugReporter().getBugCollection()).getCollection()));
+        findBugs2.setUserPreferences(defaultUserPreferences);
+        findBugs2.execute();
+    }
+
+    public void findBugs() throws IOException, InterruptedException {
+        executeFindBugs();
+        Collection<BugInstance> collection = Objects.requireNonNull(findBugs2.getBugReporter().getBugCollection()).getCollection();
+        for (BugInstance bugInstance : collection) {
+            Map<String, List<Bug>> bugsByClass;
+            if (classLoader.getTestClassesNames().contains(bugInstance.getPrimaryClass().getClassName())) {
+                bugsByClass = testBugs;
+            } else {
+                bugsByClass = bugs;
+            }
+            List<Bug> bugList = bugsByClass.getOrDefault(bugInstance.getPrimaryClass().getClassName(), new ArrayList<>());
+            bugList.add(new Bug(bugInstance));
+            bugsByClass.put(bugInstance.getPrimaryClass().getClassName(), bugList);
+        }
+    }
+
+    public Map<String, List<Bug>> getBugs() {
+        return bugs;
+    }
+
+    public Map<String, List<Bug>> getTestBugs() {
+        return testBugs;
     }
 }

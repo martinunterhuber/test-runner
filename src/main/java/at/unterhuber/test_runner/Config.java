@@ -18,6 +18,8 @@ public class Config {
     private double testMetricThreshold;
     private int issueThreshold;
     private int testIssueThreshold;
+    private int bugThreshold;
+    private int testBugThreshold;
 
     public Config(Path path, Path selfPath) {
         this.path = path;
@@ -41,6 +43,8 @@ public class Config {
             testMetricThreshold = Double.parseDouble(prop.getProperty("testMetricThreshold"));
             issueThreshold = Integer.parseInt(prop.getProperty("issueThreshold"));
             testIssueThreshold = Integer.parseInt(prop.getProperty("testIssueThreshold"));
+            bugThreshold = Integer.parseInt(prop.getProperty("bugThreshold"));
+            testBugThreshold = Integer.parseInt(prop.getProperty("testBugThreshold"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,5 +84,21 @@ public class Config {
 
     public void setTestIssueThreshold(int testIssueThreshold) {
         this.testIssueThreshold = testIssueThreshold;
+    }
+
+    public int getBugThreshold() {
+        return bugThreshold;
+    }
+
+    public void setBugThreshold(int bugThreshold) {
+        this.bugThreshold = bugThreshold;
+    }
+
+    public int getTestBugThreshold() {
+        return testBugThreshold;
+    }
+
+    public void setTestBugThreshold(int testBugThreshold) {
+        this.testBugThreshold = testBugThreshold;
     }
 }

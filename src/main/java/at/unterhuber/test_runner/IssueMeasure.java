@@ -19,7 +19,7 @@ public class IssueMeasure {
         this.pathHandler = pathHandler;
     }
 
-    public void initIssuesByClass() throws IOException {
+    public void findIssues() throws IOException {
         Report report = generateReport();
         for (RuleViolation violation : report.getViolations()) {
             Map<String, List<Issue>> issuesByClass;

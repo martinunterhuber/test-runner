@@ -27,12 +27,26 @@ public class TestSelector {
         changeSet = resolver.resolveDependenciesFor(changedFiles);
     }
 
-    public void determineClassesToTest(HashMap<String, Double> risk, Map<String, List<Issue>> issues) {
+    public void determineClassesToTest(HashMap<String, Double> risk, Map<String, List<Issue>> issues, Map<String, List<Bug>> bugs) {
         classesToTest.addAll(getClassesToTestByMetric(risk));
         classesToTest.addAll(getClassesToTestByIssues(issues));
+        classesToTest.addAll(getClassesToTestByBugs(bugs));
         if (changeSet != null) {
             excludeUnchanged();
         }
+    }
+
+    private Collection<String> getClassesToTestByBugs(Map<String, List<Bug>> bugs) {
+        return bugs.entrySet()
+                .stream()
+                .filter(entry -> entry
+                        .getValue()
+                        .stream()
+                        .map(Bug::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0) > config.getBugThreshold())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> getClassesToTestByMetric(HashMap<String, Double> risk) {
@@ -65,12 +79,26 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues) {
+    public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues, Map<String, List<Bug>> testBugs) {
         testClassesToRun.addAll(getTestClassesToRunByMetric(testRisk));
         testClassesToRun.addAll(getTestClassesToRunByIssues(testIssues));
+        classesToTest.addAll(getTestClassesToRunByBugs(testBugs));
         if (changeSet != null) {
             excludeUnchangedTests();
         }
+    }
+
+    private Collection<String> getTestClassesToRunByBugs(Map<String, List<Bug>> bugs) {
+        return bugs.entrySet()
+                .stream()
+                .filter(entry -> entry
+                        .getValue()
+                        .stream()
+                        .map(Bug::computeRisk)
+                        .reduce(Integer::sum)
+                        .orElse(0) > config.getTestBugThreshold())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> getTestClassesToRunByMetric(HashMap<String, Double> risk) {
