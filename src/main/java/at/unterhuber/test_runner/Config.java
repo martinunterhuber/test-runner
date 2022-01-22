@@ -46,7 +46,7 @@ public class Config {
             bugThreshold = Integer.parseInt(prop.getProperty("bugThreshold"));
             testBugThreshold = Integer.parseInt(prop.getProperty("testBugThreshold"));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Neither this nor the other project has a valid test.properties", e);
         }
     }
 
@@ -54,55 +54,27 @@ public class Config {
         return weights.get(key);
     }
 
-    public Double setWeightOf(String key, double value) {
-        return weights.put(key, value);
-    }
-
     public double getMetricThreshold() {
         return metricThreshold;
-    }
-
-    public void setMetricThreshold(double metricThreshold) {
-        this.metricThreshold = metricThreshold;
     }
 
     public double getTestMetricThreshold() {
         return testMetricThreshold;
     }
 
-    public void setTestMetricThreshold(double testMetricThreshold) {
-        this.testMetricThreshold = testMetricThreshold;
-    }
-
     public int getIssueThreshold() {
         return issueThreshold;
-    }
-
-    public void setIssueThreshold(int issueThreshold) {
-        this.issueThreshold = issueThreshold;
     }
 
     public int getTestIssueThreshold() {
         return testIssueThreshold;
     }
 
-    public void setTestIssueThreshold(int testIssueThreshold) {
-        this.testIssueThreshold = testIssueThreshold;
-    }
-
     public int getBugThreshold() {
         return bugThreshold;
     }
 
-    public void setBugThreshold(int bugThreshold) {
-        this.bugThreshold = bugThreshold;
-    }
-
     public int getTestBugThreshold() {
         return testBugThreshold;
-    }
-
-    public void setTestBugThreshold(int testBugThreshold) {
-        this.testBugThreshold = testBugThreshold;
     }
 }
