@@ -27,6 +27,8 @@ dependencies {
 }
 
 test {
+    dependsOn(':testProject:assemble')
+    dependsOn(':testProject:compileTestJava')
     useJUnitPlatform()
 }
 
