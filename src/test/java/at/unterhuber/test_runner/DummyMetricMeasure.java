@@ -3,7 +3,7 @@ package at.unterhuber.test_runner;
 import java.util.List;
 import java.util.Map;
 
-public class DummyMetricMeasure extends MetricMeasure{
+public class DummyMetricMeasure extends MetricMeasure {
     public DummyMetricMeasure() {
         super(null, null);
     }
