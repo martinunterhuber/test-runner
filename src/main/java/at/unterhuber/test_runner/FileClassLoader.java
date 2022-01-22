@@ -1,8 +1,6 @@
 package at.unterhuber.test_runner;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -44,15 +42,16 @@ public class FileClassLoader {
         List<URL> urls = new ArrayList<>();
         try {
             urls = Files.walk(pathHandler.getClassPath().resolve("dependency"))
-                .filter(path -> path.toString().endsWith(".jar"))
-                .map(path -> {
-                    try {
-                        return path.toUri().toURL();
-                    } catch (MalformedURLException e) {
-                        return null;
-                    }
-                }).collect(Collectors.toList());
-        } catch (IOException ignored) {}
+                    .filter(path -> path.toString().endsWith(".jar"))
+                    .map(path -> {
+                        try {
+                            return path.toUri().toURL();
+                        } catch (MalformedURLException e) {
+                            return null;
+                        }
+                    }).collect(Collectors.toList());
+        } catch (IOException ignored) {
+        }
         urls.add(pathHandler.getTestClassPath().toFile().toURI().toURL());
         urls.add(pathHandler.getMainClassPath().toFile().toURI().toURL());
         classLoader = new URLClassLoader(urls.toArray(new URL[0]), Thread.currentThread().getContextClassLoader());

@@ -26,7 +26,7 @@ public class Config {
         this.selfPath = selfPath;
     }
 
-    public void loadConfig() {
+    public void loadConfigFromFile() {
         File file = path.resolve("test.properties").toFile();
         if (!file.exists()) {
             file = selfPath.resolve("test.properties").toFile();
@@ -52,6 +52,10 @@ public class Config {
 
     public Double getWeightOf(String key) {
         return weights.get(key);
+    }
+
+    public Double setWeightOf(String key, double value) {
+        return weights.put(key, value);
     }
 
     public double getMetricThreshold() {

@@ -6,7 +6,6 @@ import net.sourceforge.pmd.util.datasource.DataSource;
 
 import java.io.IOException;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

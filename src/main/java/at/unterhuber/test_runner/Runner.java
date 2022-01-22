@@ -63,7 +63,7 @@ public class Runner {
             System.out.println("Changed files\n" + changedFiles + "\n");
         }
 
-        config.loadConfig();
+        config.loadConfigFromFile();
 
         loader.initClassLoader();
         loader.loadTestClasses();
