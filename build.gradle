@@ -29,7 +29,7 @@ test {
     useJUnitPlatform()
 }
 
-class TestTask extends JavaExec {
+class TestTask extends DefaultTask {
     @Input
     @Option(option="directory", description="The root directory of the project")
     String directory
@@ -41,12 +41,17 @@ class TestTask extends JavaExec {
 
 
 task doCustomTest(type: TestTask) {
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'at.unterhuber.test_runner.Runner'
-    doFirst {
-        def selfDirectory = workingDir
-        workingDir = directory
-        args directory, packageName, selfDirectory
+    doLast {
+        fileTree(dir: "$directory").filter{ file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
+            def dir = file.getParent()
+            javaexec {
+                classpath = sourceSets.main.runtimeClasspath
+                mainClass = 'at.unterhuber.test_runner.Runner'
+                def selfDirectory = workingDir
+                workingDir = dir
+                args dir, packageName, selfDirectory
+            }
+        }
     }
 }
 
