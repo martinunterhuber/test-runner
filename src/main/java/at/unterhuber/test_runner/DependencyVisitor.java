@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DependencyVisitor extends ClassVisitor {
-    Set<String> packages = new HashSet<String>();
+    Set<String> packages = new HashSet<>();
 
     Map<String, Map<String, Integer>> groups = new HashMap<>();
 
@@ -20,10 +20,6 @@ public class DependencyVisitor extends ClassVisitor {
 
     public DependencyVisitor() {
         super(Opcodes.ASM9);
-    }
-
-    public Map<String, Map<String, Integer>> getGlobals() {
-        return groups;
     }
 
     public Set<String> getPackages() {
@@ -125,22 +121,16 @@ public class DependencyVisitor extends ClassVisitor {
     void addMethodDesc(final String desc) {
         addType(Type.getReturnType(desc));
         Type[] types = Type.getArgumentTypes(desc);
-        for (int i = 0; i < types.length; i++) {
-            addType(types[i]);
+        for (Type type : types) {
+            addType(type);
         }
     }
 
     void addType(final Type t) {
         switch (t.getSort()) {
-            case Type.ARRAY:
-                addType(t.getElementType());
-                break;
-            case Type.OBJECT:
-                addName(t.getInternalName());
-                break;
-            case Type.METHOD:
-                addMethodDesc(t.getDescriptor());
-                break;
+            case Type.ARRAY -> addType(t.getElementType());
+            case Type.OBJECT -> addName(t.getInternalName());
+            case Type.METHOD -> addMethodDesc(t.getDescriptor());
         }
     }
 
@@ -161,8 +151,7 @@ public class DependencyVisitor extends ClassVisitor {
     void addConstant(final Object cst) {
         if (cst instanceof Type) {
             addType((Type) cst);
-        } else if (cst instanceof Handle) {
-            Handle h = (Handle) cst;
+        } else if (cst instanceof Handle h) {
             addInternalName(h.getOwner());
             addMethodDesc(h.getDesc());
         }
@@ -268,7 +257,7 @@ public class DependencyVisitor extends ClassVisitor {
 
         @Override
         public void visitMethodInsn(final int opcode, final String owner,
-                                    final String name, final String desc) {
+                                    final String name, final String desc, final boolean isInterface) {
             addInternalName(owner);
             addMethodDesc(desc);
         }
@@ -278,8 +267,8 @@ public class DependencyVisitor extends ClassVisitor {
                                            Handle bsm, Object... bsmArgs) {
             addMethodDesc(desc);
             addConstant(bsm);
-            for (int i = 0; i < bsmArgs.length; i++) {
-                addConstant(bsmArgs[i]);
+            for (Object bsmArg : bsmArgs) {
+                addConstant(bsmArg);
             }
         }
 
