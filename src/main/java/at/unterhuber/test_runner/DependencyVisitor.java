@@ -157,9 +157,15 @@ public class DependencyVisitor extends ClassVisitor {
 
     void addType(final Type t) {
         switch (t.getSort()) {
-            case Type.ARRAY -> addType(t.getElementType());
-            case Type.OBJECT -> addName(t.getInternalName());
-            case Type.METHOD -> addMethodDesc(t.getDescriptor());
+            case Type.ARRAY:
+                addType(t.getElementType());
+                break;
+            case Type.OBJECT:
+                addName(t.getInternalName());
+                break;
+            case Type.METHOD:
+                addMethodDesc(t.getDescriptor());
+                break;
         }
     }
 
@@ -180,7 +186,8 @@ public class DependencyVisitor extends ClassVisitor {
     void addConstant(final Object cst) {
         if (cst instanceof Type) {
             addType((Type) cst);
-        } else if (cst instanceof Handle h) {
+        } else if (cst instanceof Handle) {
+            Handle h = (Handle) cst;
             addInternalName(h.getOwner());
             addMethodDesc(h.getDesc());
         }
