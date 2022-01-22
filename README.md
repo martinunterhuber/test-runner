@@ -1,6 +1,4 @@
-# Test Runner
-
-![example workflow](https://github.com/martinunterhuber/test-runner/actions/workflows/build.yml/badge.svg)
+# Test Runner ![example workflow](https://github.com/martinunterhuber/test-runner/actions/workflows/build.yml/badge.svg)
 
 ## How To Run
 
