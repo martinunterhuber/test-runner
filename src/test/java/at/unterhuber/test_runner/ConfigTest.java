@@ -8,12 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 
 public class ConfigTest {
-    private final String CONFIG_PATH = "src/test/resources";
     private Config config;
 
     @BeforeEach
     public void setup() {
-        config = new Config(Path.of(CONFIG_PATH), Path.of(""));
+        config = new Config(Path.of("src/test/resources"), Path.of(""));
         config.loadConfigFromFile();
     }
 
