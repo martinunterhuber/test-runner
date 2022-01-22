@@ -46,11 +46,17 @@ public class GradlePathHandler implements ProjectPathHandler {
 
     @Override
     public boolean isMainSourcePath(String absolutePath) {
+        if (!Path.of(absolutePath).isAbsolute()) {
+            return false;
+        }
         return !getMainSourcePath().relativize(Path.of(absolutePath)).startsWith("../");
     }
 
     @Override
     public boolean isTestSourcePath(String absolutePath) {
+        if (!Path.of(absolutePath).isAbsolute()) {
+            return false;
+        }
         return !getTestSourcePath().relativize(Path.of(absolutePath)).startsWith("../");
     }
 }

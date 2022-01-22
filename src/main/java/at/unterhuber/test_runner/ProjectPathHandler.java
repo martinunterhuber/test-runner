@@ -38,6 +38,9 @@ public interface ProjectPathHandler {
         String relativePath = mainPath.relativize(path).toString();
         if (relativePath.startsWith("../")) {
             relativePath = testPath.relativize(path).toString();
+            if (relativePath.startsWith("../")) {
+                return null;
+            }
         }
         return relativePath.replace(extension, "").replace("/", ".");
     }
