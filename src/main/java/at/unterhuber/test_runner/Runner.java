@@ -53,6 +53,7 @@ public class Runner {
         RiskCalculator testCalculator = new RiskCalculator(testMeasure, config);
         IssueMeasure issueMeasure = new IssueMeasure(pathHandler);
         BugsMeasure bugsMeasure = new BugsMeasure(pathHandler, loader, Priorities.NORMAL_PRIORITY);
+        GitParser gitParser = new GitParser(pathHandler);
 
         String diff = System.getenv("DIFF");
         boolean scanAll = diff == null;
@@ -70,7 +71,7 @@ public class Runner {
         loader.initClassLoader();
         loader.loadTestClasses();
 
-        Thread[] threads = new Thread[5];
+        Thread[] threads = new Thread[6];
         threads[0] = new Thread(() -> {
             measure.measure();
             try {
@@ -117,8 +118,15 @@ public class Runner {
                     e.printStackTrace();
                 }
             });
-
         }
+
+        threads[5] = new Thread(() -> {
+            try {
+                gitParser.parseLog();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         for (Thread t : threads) {
             t.start();
@@ -135,6 +143,7 @@ public class Runner {
 
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
+        List<GitCommit> commits = gitParser.getCommits();
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);

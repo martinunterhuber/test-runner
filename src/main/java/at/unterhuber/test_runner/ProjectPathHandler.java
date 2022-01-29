@@ -21,6 +21,13 @@ public interface ProjectPathHandler {
 
     boolean isTestSourcePath(String absolutePath);
 
+    default String getFullClassNameFrom(Path path) {
+        Path relativeMain = getMainSourcePath().relativize(getRootPath().resolve(path));
+        Path relativeTest = getTestSourcePath().relativize(getRootPath().resolve(path));
+        Path relative = relativeMain.toString().startsWith("../") ? relativeTest : relativeMain;
+        return relative.toString().replace("/", ".").replace(".java", "");
+    }
+
     default String pathToFullClassName(String filePath) {
         Path path = getRootPath().resolve(filePath);
         Path mainPath;
