@@ -2,6 +2,8 @@ package at.unterhuber.test_runner;
 
 import edu.umd.cs.findbugs.Priorities;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -68,28 +70,71 @@ public class Runner {
         loader.initClassLoader();
         loader.loadTestClasses();
 
-        measure.measure();
-        measure.initMeasurements();
-        // measure.printSelectedMetrics();
+        Thread[] threads = new Thread[5];
+        threads[0] = new Thread(() -> {
+            measure.measure();
+            try {
+                measure.initMeasurements();
+                // measure.printSelectedMetrics();
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
 
-        testMeasure.measure();
-        testMeasure.initMeasurements();
-        // testMeasure.printSelectedMetrics();
+        threads[1] = new Thread(() -> {
+            testMeasure.measure();
+            try {
+                testMeasure.initMeasurements();
+                // testMeasure.printSelectedMetrics();
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
 
-        HashMap<String, Double> risk = calculator.getRiskByClass();
-        HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
+        threads[2] = new Thread(() -> {
+            try {
+                issueMeasure.findIssues();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-        issueMeasure.findIssues();
+        threads[3] = new Thread(() -> {
+            try {
+                bugsMeasure.findBugs();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        threads[4] = new Thread(() -> {});
+        if (!scanAll) {
+            List<String> finalChangedFiles = changedFiles;
+            threads[4] = new Thread(() -> {
+                try {
+                    selector.determineChangeSet(finalChangedFiles);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
+
+        for (Thread t : threads) {
+            t.start();
+        }
+        for (Thread t : threads) {
+            t.join();
+        }
+
         Map<String, List<Issue>> issues = issueMeasure.getIssues();
         Map<String, List<Issue>> testIssues = issueMeasure.getTestIssues();
 
-        bugsMeasure.findBugs();
         Map<String, List<Bug>> bugs = bugsMeasure.getBugs();
         Map<String, List<Bug>> testBugs = bugsMeasure.getTestBugs();
 
-        if (!scanAll) {
-            selector.determineChangeSet(changedFiles);
-        }
+        HashMap<String, Double> risk = calculator.getRiskByClass();
+        HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
