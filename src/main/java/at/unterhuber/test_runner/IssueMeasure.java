@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
+
 public class IssueMeasure {
     private final ProjectPathHandler pathHandler;
     private final Map<String, List<Issue>> issues = new HashMap<>();
@@ -38,14 +40,14 @@ public class IssueMeasure {
     }
 
     public void printIssues(Map<String, List<Issue>> issues) {
-        System.out.println("Issues\n" + issues.entrySet()
+        System.out.println("Issues\n" + toLineSeparatedString(issues.entrySet()
                 .stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>(pathHandler.pathToFullClassName(entry.getKey()), entry.getValue()
                         .stream()
                         .map(Issue::computeRisk)
                         .reduce(Integer::sum)
                         .orElse(0)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) + "\n");
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))) + "\n");
     }
 
     private Report generateReport() throws IOException {

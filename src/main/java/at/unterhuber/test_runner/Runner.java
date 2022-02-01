@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
+
 
 public class Runner {
     // TODO: add these to config?
@@ -143,7 +145,7 @@ public class Runner {
                         .map((combination) -> combination.mapWith(gitParser.getReverseIdMap()))
                         .collect(Collectors.toList());
                 System.out.println("Files often changed together");
-                System.out.println(mappedCombinations);
+                System.out.println(toLineSeparatedString(mappedCombinations));
                 System.out.println();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();

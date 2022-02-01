@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
+
 public class TestSelector {
     private final FileClassLoader loader;
     private final Config config;
@@ -132,8 +134,8 @@ public class TestSelector {
     }
 
     public List<DiscoverySelector> selectTestClasses() throws IOException {
-        System.out.println("Risky classes\n" + classesToTest + "\n");
-        System.out.println("Risky tests\n" + testClassesToRun + "\n");
+        System.out.println("Risky classes\n" + toLineSeparatedString(classesToTest) + "\n");
+        System.out.println("Risky tests\n" + toLineSeparatedString(testClassesToRun) + "\n");
 
         Set<DiscoverySelector> selectors = resolver
                 .resolveDependenciesFor(new ArrayList<>(classesToTest))
@@ -148,7 +150,7 @@ public class TestSelector {
                         .map(DiscoverySelectors::selectClass)
                         .collect(Collectors.toSet())
         );
-        System.out.println("Selected tests\n" + selectors + "\n");
+        System.out.println("Selected tests\n" + toLineSeparatedString(selectors) + "\n");
         return new ArrayList<>(selectors);
     }
 }

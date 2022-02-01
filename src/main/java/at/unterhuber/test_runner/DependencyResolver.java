@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
+
 public class DependencyResolver {
     private final FileClassLoader loader;
     private final ProjectPathHandler pathHandler;
@@ -41,7 +43,7 @@ public class DependencyResolver {
                 }
             }
         }
-        System.out.println("Changed+dependent classes\n" + visited + "\n");
+        System.out.println("Changed+dependent classes\n" + toLineSeparatedString(visited) + "\n");
 
         return visited;
     }
@@ -58,7 +60,7 @@ public class DependencyResolver {
             visited.add(clazz);
             resolveDependenciesRecursive(clazz, visited, 0, maxDepth);
         }
-        System.out.println("Changed+dependent classes\n" + visited + "\n");
+        System.out.println("Changed+dependent classes\n" + toLineSeparatedString(visited) + "\n");
 
         return visited;
     }

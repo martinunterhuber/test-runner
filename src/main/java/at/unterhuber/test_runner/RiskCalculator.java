@@ -3,6 +3,8 @@ package at.unterhuber.test_runner;
 import java.util.HashMap;
 import java.util.List;
 
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
+
 public class RiskCalculator {
     private final MetricMeasure measure;
     private final Config config;
@@ -20,7 +22,7 @@ public class RiskCalculator {
                 risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
-        System.out.println("Risks\n" + risk + "\n");
+        System.out.println("Metrics\n" + toLineSeparatedString(risk) + "\n");
         return risk;
     }
 }
