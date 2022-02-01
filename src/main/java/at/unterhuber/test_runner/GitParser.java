@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GitParser {
@@ -33,6 +31,8 @@ public class GitParser {
     }
 
     public void parseLog() throws IOException, InterruptedException {
+        int clazzId = 0;
+        Map<String, Integer> idMap = new HashMap<>();
         String[] commitsString = getLog().split("commit\n");
         for (String commitString : commitsString) {
             String[] lines = commitString.split("\n");
@@ -46,8 +46,18 @@ public class GitParser {
                 if (parts[0].equals("-") || !parts[2].endsWith(".java")) {
                     continue;
                 }
+                // TODO: consider renames
                 String clazz = pathHandler.getFullClassNameFrom(Path.of(parts[2]));
-                commit.addFileChange(clazz, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                int index = clazz.lastIndexOf("..");
+                if (index != -1) {
+                    clazz = clazz.substring(index + 2);
+                }
+                Integer id = idMap.get(clazz);
+                if (id == null) {
+                    idMap.put(clazz, ++clazzId);
+                    id = clazzId;
+                }
+                commit.addFileChange(clazz, id, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
             }
         }
     }

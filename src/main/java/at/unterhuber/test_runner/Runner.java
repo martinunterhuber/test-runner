@@ -123,6 +123,21 @@ public class Runner {
         threads[5] = new Thread(() -> {
             try {
                 gitParser.parseLog();
+                List<GitCommit> commits = gitParser.getCommits();
+                List<Set<Integer>> transactions = new ArrayList<>();
+                for (GitCommit commit: commits) {
+                    if (commit.getChanges().isEmpty()) {
+                        continue;
+                    }
+                    Set<Integer> set = commit
+                            .getChanges()
+                            .stream()
+                            .map(change -> change.id)
+                            .collect(Collectors.toSet());
+                    transactions.add(set);
+                }
+                Apriori apriori = new Apriori(transactions, Math.sqrt(1d / transactions.size()), 0.7);
+                apriori.find();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -143,7 +158,6 @@ public class Runner {
 
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
-        List<GitCommit> commits = gitParser.getCommits();
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);

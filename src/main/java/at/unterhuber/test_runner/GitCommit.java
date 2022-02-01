@@ -17,12 +17,16 @@ public class GitCommit {
         this.changes = new ArrayList<>();
     }
 
-    public void addFileChange(String clazz, int added, int removed) {
-        changes.add(new GitFileChange(clazz, added, removed));
+    public void addFileChange(String clazz, int id, int added, int removed) {
+        changes.add(new GitFileChange(clazz, id, added, removed));
     }
 
     @Override
     public String toString() {
         return String.format("Commit %s: %s %s", hash, author, date);
+    }
+
+    public List<GitFileChange> getChanges() {
+        return changes;
     }
 }
