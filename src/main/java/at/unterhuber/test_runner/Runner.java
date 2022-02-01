@@ -137,7 +137,14 @@ public class Runner {
                     transactions.add(set);
                 }
                 Apriori apriori = new Apriori(transactions, Math.sqrt(1d / transactions.size()), 0.7);
-                apriori.find();
+                List<Apriori.Combination<Integer>> combinations = apriori.find();
+                List<Apriori.Combination<String>> mappedCombinations = combinations
+                        .stream()
+                        .map((combination) -> combination.mapWith(gitParser.getReverseIdMap()))
+                        .collect(Collectors.toList());
+                System.out.println("Files often changed together");
+                System.out.println(mappedCombinations);
+                System.out.println();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }

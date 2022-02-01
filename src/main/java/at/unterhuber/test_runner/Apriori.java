@@ -7,15 +7,15 @@ public class Apriori {
     private final List<Set<Integer>> transactions;
     private final int numItems;
     private final int numTransactions;
-    private final double minSup;
-    private final double minConf;
+    private final double minSupport;
+    private final double minConfidence;
 
     private final List<Set<Integer>> frequentItemSets = new ArrayList<>();
     private List<Set<Integer>> itemSets;
 
-    public Apriori(List<Set<Integer>> transactions, double minSup, double minConf) {
-        this.minSup = minSup;
-        this.minConf = minConf;
+    public Apriori(List<Set<Integer>> transactions, double minSupport, double minConfidence) {
+        this.minSupport = minSupport;
+        this.minConfidence = minConfidence;
         this.transactions = transactions;
         this.numItems = transactions
                 .stream()
@@ -23,6 +23,39 @@ public class Apriori {
                 .max(Integer::compareTo)
                 .orElse(Integer.MIN_VALUE);
         this.numTransactions = transactions.size();
+    }
+
+    public static class Combination<T> {
+        private final Set<T> leftSet;
+        private final Set<T> rightSet;
+        private final double confidence;
+
+        public Combination(Set<T> leftSet, Set<T> rightSet, double confidence) {
+            this.leftSet = leftSet;
+            this.rightSet = rightSet;
+            this.confidence = confidence;
+        }
+
+        public <U> Combination<U> mapWith(Map<T, U> map) {
+            return new Combination<>(
+                leftSet.stream().map(map::get).collect(Collectors.toSet()),
+                rightSet.stream().map(map::get).collect(Collectors.toSet()),
+                confidence
+            );
+        }
+
+        public Set<T> getLeftSet() {
+            return leftSet;
+        }
+
+        public Set<T> getRightSet() {
+            return rightSet;
+        }
+
+        @Override
+        public String toString() {
+            return leftSet + " ==> " + rightSet;
+        }
     }
 
     private static Set<Set<Integer>> allSubsetsOf(Set<Integer> set) {
@@ -40,7 +73,7 @@ public class Apriori {
         return subsets;
     }
 
-    public void find() {
+    public List<Combination<Integer>> find() {
         createItemSetsOfSize1();
         while (itemSets.size() > 0) {
             calculateFrequentItemSets();
@@ -48,10 +81,11 @@ public class Apriori {
                 createNewItemSetsFromPreviousOnes();
             }
         }
-        filterByConfidence();
+        return filterByConfidence();
     }
 
-    private void filterByConfidence() {
+    private List<Combination<Integer>> filterByConfidence() {
+        List<Combination<Integer>> combinations = new ArrayList<>();
         for (Set<Integer> itemSet : frequentItemSets) {
             for (Set<Integer> leftSet : allSubsetsOf(itemSet)) {
                 Set<Integer> rightSet = new HashSet<>(itemSet);
@@ -66,11 +100,13 @@ public class Apriori {
                         }
                     }
                 }
-                if ((double) matches / total >= minConf) {
-                    System.out.printf("(%s) ==> (%s) %.1f%s\n", leftSet, rightSet, (double) matches*100 / total, "%");
+                double confidence = (double) matches / total;
+                if (confidence >= minConfidence) {
+                    combinations.add(new Combination<>(leftSet, rightSet, confidence));
                 }
             }
         }
+        return combinations;
     }
 
     private void createItemSetsOfSize1() {
@@ -112,7 +148,7 @@ public class Apriori {
         }
 
         itemSets = IntStream.range(0, itemSets.size())
-                .filter((i) -> (counts[i] / (double) (numTransactions)) >= minSup)
+                .filter((i) -> (counts[i] / (double) (numTransactions)) >= minSupport)
                 .mapToObj(itemSets::get)
                 .collect(Collectors.toList());
         frequentItemSets.addAll(itemSets);

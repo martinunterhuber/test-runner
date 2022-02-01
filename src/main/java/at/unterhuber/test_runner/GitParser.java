@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 public class GitParser {
     private final ProjectPathHandler pathHandler;
     private final List<GitCommit> commits;
+    private Map<String, Integer> idMap;
+    private Map<Integer, String> reverseIdMap;
 
     public GitParser(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -32,7 +34,7 @@ public class GitParser {
 
     public void parseLog() throws IOException, InterruptedException {
         int clazzId = 0;
-        Map<String, Integer> idMap = new HashMap<>();
+        idMap = new HashMap<>();
         String[] commitsString = getLog().split("commit\n");
         for (String commitString : commitsString) {
             String[] lines = commitString.split("\n");
@@ -60,9 +62,14 @@ public class GitParser {
                 commit.addFileChange(clazz, id, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
             }
         }
+        reverseIdMap = idMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 
     public List<GitCommit> getCommits() {
         return commits;
+    }
+
+    public Map<Integer, String> getReverseIdMap() {
+        return reverseIdMap;
     }
 }
