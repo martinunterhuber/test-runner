@@ -41,10 +41,21 @@ public class Runner {
         if (Files.exists(Path.of(rootPath).resolve("target"))) {
             System.out.println("Inferred Build Tool: Maven\n");
             pathHandler = new MavenPathHandler(rootPath);
-        } else {
+        } else if (Files.exists(Path.of(rootPath).resolve("build"))) {
             System.out.println("Inferred Build Tool: Gradle\n");
             pathHandler = new GradlePathHandler(rootPath);
+        } else {
+            System.out.println("Skipping " + rootPath + ": build directory is missing (did you forget to compile the program?)\n");
+            return;
         }
+        if (!pathHandler.getTestClassPath().toFile().exists()
+                || !pathHandler.getMainClassPath().toFile().exists()
+                || !pathHandler.getTestSourcePath().toFile().exists()
+                || !pathHandler.getMainSourcePath().toFile().exists()) {
+            System.out.println("Skipping " + rootPath + ": project is empty\n");
+            return;
+        }
+
         Config config = new Config(pathHandler.getRootPath(), Path.of(selfRootPath));
         FileClassLoader loader = new FileClassLoader(pathHandler);
         DependencyResolver resolver = new DependencyResolver(loader, pathHandler, packageName);
