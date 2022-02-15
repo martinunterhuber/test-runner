@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
@@ -122,6 +123,7 @@ public class Runner {
             });
         }
 
+        AtomicReference<List<Apriori.Combination<String>>> combinations = new AtomicReference<>();
         threads[5] = new Thread(() -> {
             try {
                 gitParser.parseLog();
@@ -138,14 +140,15 @@ public class Runner {
                             .collect(Collectors.toSet());
                     transactions.add(set);
                 }
-                Apriori apriori = new Apriori(transactions, Math.sqrt(1d / transactions.size()), 0.7);
-                List<Apriori.Combination<Integer>> combinations = apriori.find();
-                List<Apriori.Combination<String>> mappedCombinations = combinations
+                // todo: adapt minSupport
+                Apriori apriori = new Apriori(transactions, Math.sqrt(0.7d / transactions.size()), 0.7);
+                List<Apriori.Combination<Integer>> idCombinations = apriori.find();
+                combinations.set(idCombinations
                         .stream()
                         .map((combination) -> combination.mapWith(gitParser.getReverseIdMap()))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList()));
                 System.out.println("Files often changed together");
-                System.out.println(toLineSeparatedString(mappedCombinations));
+                System.out.println(toLineSeparatedString(combinations.get()));
                 System.out.println();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -170,6 +173,7 @@ public class Runner {
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
+        // Todo: combinations.get();
 
         executor.executeTests();
     }
