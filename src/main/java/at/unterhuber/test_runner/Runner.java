@@ -21,6 +21,9 @@ public class Runner {
             "Rfc",
             "Cbo",
             "Dit",
+            "Noc",
+            "Fanin",
+            "Fanout",
             "NumberOfMethods",
             "NumberOfFields"
     };
