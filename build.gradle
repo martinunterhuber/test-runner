@@ -19,8 +19,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
     implementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
 
-    implementation 'com.github.mauricioaniche:ck:0.6.4'
-    implementation 'net.sourceforge.pmd:pmd-java:6.41.0'
+    implementation 'com.github.mauricioaniche:ck:0.7.0'
+    implementation 'net.sourceforge.pmd:pmd-java:6.42.0'
     implementation 'org.jgrapht:jgrapht-core:1.5.1'
     implementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
     implementation 'com.github.spotbugs:spotbugs:4.5.3'
