@@ -45,7 +45,7 @@ public class GitParser {
             commits.add(commit);
             for (String line : Arrays.stream(lines).skip(4).collect(Collectors.toList())) {
                 String[] parts = line.split("\t");
-                if (parts[0].equals("-") || !parts[2].endsWith(".java")) {
+                if (parts[0].equals("-") || parts.length <= 2 || !parts[2].endsWith(".java")) {
                     continue;
                 }
                 // TODO: consider renames
