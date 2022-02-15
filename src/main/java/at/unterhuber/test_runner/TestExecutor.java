@@ -31,8 +31,6 @@ public class TestExecutor {
         try (LauncherSession session = LauncherFactory.openSession()) {
             Launcher launcher = session.getLauncher();
             launcher.registerTestExecutionListeners(listener);
-            TestPlan testPlan = launcher.discover(request);
-            launcher.execute(testPlan);
             launcher.execute(request);
         } catch (Exception e) {
             e.printStackTrace(System.out);

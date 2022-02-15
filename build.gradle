@@ -48,7 +48,7 @@ task doCustomTest(type: TestTask) {
         fileTree(dir: "$directory").filter{ file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
             def dir = file.getParent()
             javaexec {
-                classpath = sourceSets.main.runtimeClasspath
+                classpath = files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency") + sourceSets.main.runtimeClasspath
                 mainClass = 'at.unterhuber.test_runner.Runner'
                 def selfDirectory = workingDir
                 workingDir = dir

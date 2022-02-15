@@ -54,6 +54,7 @@ public class FileClassLoader {
         }
         urls.add(pathHandler.getTestClassPath().toFile().toURI().toURL());
         urls.add(pathHandler.getMainClassPath().toFile().toURI().toURL());
+        urls.add(pathHandler.getClassPath().toFile().toURI().toURL());
         classLoader = new URLClassLoader(urls.toArray(new URL[0]), Thread.currentThread().getContextClassLoader());
         Thread.currentThread().setContextClassLoader(classLoader);
     }
