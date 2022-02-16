@@ -84,7 +84,7 @@ public class TestSelector {
     public void determineTestsToRun(HashMap<String, Double> testRisk, Map<String, List<Issue>> testIssues, Map<String, List<Bug>> testBugs) {
         testClassesToRun.addAll(getTestClassesToRunByMetric(testRisk));
         testClassesToRun.addAll(getTestClassesToRunByIssues(testIssues));
-        classesToTest.addAll(getTestClassesToRunByBugs(testBugs));
+        testClassesToRun.addAll(getTestClassesToRunByBugs(testBugs));
         if (changeSet != null) {
             excludeUnchangedTests();
         }
