@@ -57,13 +57,13 @@ public class MetricMeasure {
                 measurement.forMaxValue(max);
             }
         }
+        printSelectedMetrics();
     }
 
-    public void printSelectedMetrics() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        for (Map.Entry<String, CKClassResult> entry : ckMeasurements.entrySet()) {
-            for (Metric metric : metrics) {
-                Method method = CKClassResult.class.getMethod("get" + metric.name);
-                System.out.println(entry.getKey() + " - " + metric.name + ": " + method.invoke(entry.getValue()));
+    public void printSelectedMetrics() {
+        for (Map.Entry<String, List<Measurement>> entry : measurements.entrySet()) {
+            for (Measurement measurement : entry.getValue()) {
+                System.out.printf("%55s - %s: %s\n", measurement.getClassName(), measurement.getMetric(), measurement.getRelativeValue());
             }
         }
     }

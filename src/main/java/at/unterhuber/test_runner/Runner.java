@@ -91,23 +91,16 @@ public class Runner {
         Thread[] threads = new Thread[6];
         threads[0] = new Thread(() -> {
             measure.measure();
+            testMeasure.measure();
             try {
                 measure.initMeasurements();
-                // measure.printSelectedMetrics();
+                testMeasure.initMeasurements();
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         });
 
-        threads[1] = new Thread(() -> {
-            testMeasure.measure();
-            try {
-                testMeasure.initMeasurements();
-                // testMeasure.printSelectedMetrics();
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
+        threads[1] = new Thread(() -> { });
 
         threads[2] = new Thread(() -> {
             try {
@@ -155,7 +148,7 @@ public class Runner {
                     transactions.add(set);
                 }
                 // todo: adapt minSupport
-                Apriori apriori = new Apriori(transactions, Math.sqrt(0.7d / transactions.size()), 0.7);
+                Apriori apriori = new Apriori(transactions, Math.sqrt(1d / transactions.size()), 0.7);
                 List<Apriori.Combination<Integer>> idCombinations = apriori.find();
                 combinations.set(idCombinations
                         .stream()
