@@ -148,8 +148,16 @@ public class Runner {
                     transactions.add(set);
                 }
                 // todo: adapt minSupport
-                Apriori apriori = new Apriori(transactions, Math.sqrt(1d / transactions.size()), 0.7);
-                List<Apriori.Combination<Integer>> idCombinations = apriori.find();
+                double minSupport = Math.sqrt(1d / transactions.size());
+                List<Apriori.Combination<Integer>> idCombinations = null;
+                while (idCombinations == null || idCombinations.size() < 5) {
+                    System.out.println(minSupport);
+                    System.out.println(transactions.size());
+                    System.out.println();
+                    Apriori apriori = new Apriori(transactions, minSupport, 0.8);
+                    idCombinations = apriori.find();
+                    minSupport /= 1.5;
+                }
                 combinations.set(idCombinations
                         .stream()
                         .map((combination) -> combination.mapWith(gitParser.getReverseIdMap()))
