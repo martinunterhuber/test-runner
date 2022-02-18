@@ -10,20 +10,53 @@ public class RiskCalculator {
     private final MetricMeasure measure;
     private final Config config;
 
+    private HashMap<String, Double> risks;
+    private List<Apriori.Combination<String>> combinations = new ArrayList<>();
+
+    private static final double propagationFactor = 0.5;
+
     public RiskCalculator(MetricMeasure measure, Config config) {
         this.measure = measure;
         this.config = config;
     }
 
     public HashMap<String, Double> getRiskByClass() {
-        HashMap<String, Double> risk = new HashMap<>();
+        risks = new HashMap<>();
         for (List<Measurement> measurements : measure.getMeasurements().values()) {
             for (Measurement measurement : measurements) {
-                double value = risk.getOrDefault(measurement.getClassName(), 0.0);
-                risk.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
+                double value = risks.getOrDefault(measurement.getClassName(), 0.0);
+                risks.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
-        System.out.println("Metrics\n" + toLineSeparatedString(risk) + "\n");
-        return risk;
+        System.out.println("Metrics\n" + toLineSeparatedString(risks) + "\n");
+        shareRiskOftenChangedTogether();
+        return risks;
+    }
+
+    public void shareRiskOftenChangedTogether() {
+        HashMap<String, Double> temp = new HashMap<>(risks);
+        for (Apriori.Combination<String> combination : combinations) {
+            double riskSum = 0d;
+            int count = combination.getLeftSet().size();
+            for (String left : combination.getLeftSet()) {
+                Double risk = temp.get(left);
+                if (risk != null) {
+                    riskSum += risk;
+                }
+            }
+            double averageRisk = riskSum / count;
+            for (String right : combination.getRightSet()) {
+                Double risk = risks.get(right);
+                if (averageRisk > risk) {
+                    risk = (risk + averageRisk * propagationFactor) / (1 + propagationFactor);
+                    risks.put(right, risk);
+                }
+            }
+        }
+        System.out.println("Metrics (with risk propagation)\n" + toLineSeparatedString(risks) + "\n");
+    }
+
+    public void setCombinations(List<Apriori.Combination<String>> combinations) {
+        this.combinations = combinations;
     }
 }

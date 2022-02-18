@@ -175,6 +175,7 @@ public class Runner {
         Map<String, List<Bug>> bugs = bugsMeasure.getBugs();
         Map<String, List<Bug>> testBugs = bugsMeasure.getTestBugs();
 
+        calculator.setCombinations(combinations.get());
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
