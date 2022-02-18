@@ -13,7 +13,7 @@ public class CollectionFormatter {
             StringBuilder sb = new StringBuilder();
             sb.append('[').append('\n');
 
-            while(true) {
+            while (true) {
                 E e = it.next();
                 sb.append(' ');
                 sb.append(e == c ? "(this Collection)" : e);
@@ -34,8 +34,8 @@ public class CollectionFormatter {
             StringBuilder sb = new StringBuilder();
             sb.append('{').append('\n');
 
-            while(true) {
-                Map.Entry<K, V> e = (Map.Entry)i.next();
+            while (true) {
+                Map.Entry<K, V> e = (Map.Entry) i.next();
                 K key = e.getKey();
                 V value = e.getValue();
                 sb.append(' ');

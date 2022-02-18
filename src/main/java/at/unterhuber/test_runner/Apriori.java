@@ -1,7 +1,8 @@
 package at.unterhuber.test_runner;
 
 import java.util.*;
-import java.util.stream.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Apriori {
     private final List<Set<Integer>> transactions;
@@ -25,44 +26,11 @@ public class Apriori {
         this.numTransactions = transactions.size();
     }
 
-    public static class Combination<T> {
-        private final Set<T> leftSet;
-        private final Set<T> rightSet;
-        private final double confidence;
-
-        public Combination(Set<T> leftSet, Set<T> rightSet, double confidence) {
-            this.leftSet = leftSet;
-            this.rightSet = rightSet;
-            this.confidence = confidence;
-        }
-
-        public <U> Combination<U> mapWith(Map<T, U> map) {
-            return new Combination<>(
-                leftSet.stream().map(map::get).collect(Collectors.toSet()),
-                rightSet.stream().map(map::get).collect(Collectors.toSet()),
-                confidence
-            );
-        }
-
-        public Set<T> getLeftSet() {
-            return leftSet;
-        }
-
-        public Set<T> getRightSet() {
-            return rightSet;
-        }
-
-        @Override
-        public String toString() {
-            return leftSet + " ==> " + rightSet;
-        }
-    }
-
     private static Set<Set<Integer>> allSubsetsOf(Set<Integer> set) {
         Integer[] array = set.toArray(new Integer[0]);
         Set<Set<Integer>> subsets = new HashSet<>();
         int n = array.length;
-        for (int i = 0; i < (1<<n); i++) {
+        for (int i = 0; i < (1 << n); i++) {
             Set<Integer> subset = new HashSet<>();
             for (int j = 0; j < n; j++) {
                 if ((i & (1 << j)) > 0)
@@ -152,5 +120,38 @@ public class Apriori {
                 .mapToObj(itemSets::get)
                 .collect(Collectors.toList());
         frequentItemSets.addAll(itemSets);
+    }
+
+    public static class Combination<T> {
+        private final Set<T> leftSet;
+        private final Set<T> rightSet;
+        private final double confidence;
+
+        public Combination(Set<T> leftSet, Set<T> rightSet, double confidence) {
+            this.leftSet = leftSet;
+            this.rightSet = rightSet;
+            this.confidence = confidence;
+        }
+
+        public <U> Combination<U> mapWith(Map<T, U> map) {
+            return new Combination<>(
+                    leftSet.stream().map(map::get).collect(Collectors.toSet()),
+                    rightSet.stream().map(map::get).collect(Collectors.toSet()),
+                    confidence
+            );
+        }
+
+        public Set<T> getLeftSet() {
+            return leftSet;
+        }
+
+        public Set<T> getRightSet() {
+            return rightSet;
+        }
+
+        @Override
+        public String toString() {
+            return leftSet + " ==> " + rightSet;
+        }
     }
 }

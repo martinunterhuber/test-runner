@@ -13,7 +13,7 @@ public class GitCommit {
     public GitCommit(String hash, String author, long timestamp) {
         this.hash = hash;
         this.author = author;
-        this.date = new Date(timestamp*1000L);
+        this.date = new Date(timestamp * 1000L);
         this.changes = new ArrayList<>();
     }
 

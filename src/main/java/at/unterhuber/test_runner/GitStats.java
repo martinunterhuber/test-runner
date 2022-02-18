@@ -87,7 +87,7 @@ public class GitStats {
 
     public List<Apriori.Combination<String>> findFilesOftenChangedTogether() {
         List<Set<Integer>> transactions = new ArrayList<>();
-        for (GitCommit commit: commits) {
+        for (GitCommit commit : commits) {
             if (commit.getChanges().isEmpty()) {
                 continue;
             }

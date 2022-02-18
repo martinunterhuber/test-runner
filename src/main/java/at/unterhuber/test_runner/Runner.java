@@ -10,8 +10,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
-
 
 public class Runner {
     // TODO: add these to config?
@@ -100,7 +98,8 @@ public class Runner {
             }
         });
 
-        threads[1] = new Thread(() -> { });
+        threads[1] = new Thread(() -> {
+        });
 
         threads[2] = new Thread(() -> {
             try {
@@ -118,7 +117,8 @@ public class Runner {
             }
         });
 
-        threads[4] = new Thread(() -> {});
+        threads[4] = new Thread(() -> {
+        });
         if (!scanAll) {
             List<String> finalChangedFiles = changedFiles;
             threads[4] = new Thread(() -> {

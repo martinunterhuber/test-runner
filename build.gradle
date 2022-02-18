@@ -34,18 +34,18 @@ test {
 
 class TestTask extends DefaultTask {
     @Input
-    @Option(option="directory", description="The root directory of the project")
+    @Option(option = "directory", description = "The root directory of the project")
     String directory
 
     @Input
-    @Option(option="packageName", description="The name of the package to test")
+    @Option(option = "packageName", description = "The name of the package to test")
     String packageName
 }
 
 
 task doCustomTest(type: TestTask) {
     doLast {
-        fileTree(dir: "$directory").filter{ file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
+        fileTree(dir: "$directory").filter { file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
             def dir = file.getParent()
             javaexec {
                 classpath = files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency") + sourceSets.main.runtimeClasspath

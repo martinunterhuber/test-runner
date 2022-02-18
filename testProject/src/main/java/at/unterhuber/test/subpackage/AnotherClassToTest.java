@@ -10,7 +10,7 @@ public class AnotherClassToTest extends ClassToTest {
             }
             return a;
         }
-        if (c < b){
+        if (c < b) {
             return c;
         }
         return b;
