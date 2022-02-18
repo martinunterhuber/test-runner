@@ -86,7 +86,7 @@ public class Runner {
         loader.initClassLoader();
         loader.loadTestClasses();
 
-        Thread[] threads = new Thread[6];
+        Thread[] threads = new Thread[5];
         threads[0] = new Thread(() -> {
             measure.measure();
             testMeasure.measure();
@@ -99,9 +99,6 @@ public class Runner {
         });
 
         threads[1] = new Thread(() -> {
-        });
-
-        threads[2] = new Thread(() -> {
             try {
                 issueMeasure.findIssues();
             } catch (IOException e) {
@@ -109,7 +106,7 @@ public class Runner {
             }
         });
 
-        threads[3] = new Thread(() -> {
+        threads[2] = new Thread(() -> {
             try {
                 bugsMeasure.findBugs();
             } catch (IOException | InterruptedException e) {
@@ -117,11 +114,11 @@ public class Runner {
             }
         });
 
-        threads[4] = new Thread(() -> {
+        threads[3] = new Thread(() -> {
         });
         if (!scanAll) {
             List<String> finalChangedFiles = changedFiles;
-            threads[4] = new Thread(() -> {
+            threads[3] = new Thread(() -> {
                 try {
                     selector.determineChangeSet(finalChangedFiles);
                 } catch (IOException e) {
@@ -131,7 +128,7 @@ public class Runner {
         }
 
         AtomicReference<List<Apriori.Combination<String>>> combinations = new AtomicReference<>();
-        threads[5] = new Thread(() -> {
+        threads[4] = new Thread(() -> {
             try {
                 gitParser.parseLog();
                 GitStats stats = gitParser.getStats();
