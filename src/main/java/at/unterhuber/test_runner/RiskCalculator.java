@@ -14,6 +14,7 @@ public class RiskCalculator {
     private List<Apriori.Combination<String>> combinations = new ArrayList<>();
 
     private static final double propagationFactor = 0.5;
+    private GitStats stats;
 
     public RiskCalculator(MetricMeasure measure, Config config) {
         this.measure = measure;
@@ -53,10 +54,14 @@ public class RiskCalculator {
                 }
             }
         }
-        System.out.println("Metrics (with risk propagation)\n" + toLineSeparatedString(risks) + "\n");
+        System.out.println("Metrics (with sharing risk)\n" + toLineSeparatedString(risks) + "\n");
     }
 
     public void setCombinations(List<Apriori.Combination<String>> combinations) {
         this.combinations = combinations;
+    }
+
+    public void setStats(GitStats stats) {
+        this.stats = stats;
     }
 }

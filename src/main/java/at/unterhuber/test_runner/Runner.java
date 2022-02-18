@@ -143,7 +143,7 @@ public class Runner {
                     Set<Integer> set = commit
                             .getChanges()
                             .stream()
-                            .map(change -> change.id)
+                            .map(change -> change.getId())
                             .collect(Collectors.toSet());
                     transactions.add(set);
                 }
@@ -184,12 +184,12 @@ public class Runner {
         Map<String, List<Bug>> testBugs = bugsMeasure.getTestBugs();
 
         calculator.setCombinations(combinations.get());
+        calculator.setStats(gitParser.getStats());
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
-        // Todo: combinations.get();
 
         executor.executeTests();
     }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class GitParser {
     private final ProjectPathHandler pathHandler;
     private final List<GitCommit> commits;
+
     private Map<String, Integer> idMap;
     private Map<Integer, String> reverseIdMap;
     private Map<String, String> renameMap;
@@ -65,6 +66,12 @@ public class GitParser {
             }
         }
         reverseIdMap = idMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    }
+
+    public GitStats getStats() {
+        GitStats stats = new GitStats(commits);
+        stats.initStats();
+        return stats;
     }
 
     private String handleRename(String path) {

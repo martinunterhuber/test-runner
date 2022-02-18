@@ -21,6 +21,18 @@ public class GitCommit {
         changes.add(new GitFileChange(clazz, id, added, removed));
     }
 
+    public String getHash() {
+        return hash;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
     @Override
     public String toString() {
         return String.format("Commit %s: %s %s", hash, author, date);
