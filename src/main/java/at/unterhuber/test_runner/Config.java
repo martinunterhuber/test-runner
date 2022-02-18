@@ -20,6 +20,7 @@ public class Config {
     private int testIssueThreshold;
     private int bugThreshold;
     private int testBugThreshold;
+    private double propagationFactor;
 
     public Config(Path path, Path selfPath) {
         this.path = path;
@@ -45,6 +46,7 @@ public class Config {
             testIssueThreshold = Integer.parseInt(prop.getProperty("testIssueThreshold"));
             bugThreshold = Integer.parseInt(prop.getProperty("bugThreshold"));
             testBugThreshold = Integer.parseInt(prop.getProperty("testBugThreshold"));
+            propagationFactor = Double.parseDouble(prop.getProperty("filePropagationFactor"));
         } catch (IOException e) {
             throw new IllegalArgumentException("Neither this nor the other project has a valid test.properties", e);
         }
@@ -76,5 +78,9 @@ public class Config {
 
     public int getTestBugThreshold() {
         return testBugThreshold;
+    }
+
+    public double getPropagationFactor() {
+        return propagationFactor;
     }
 }

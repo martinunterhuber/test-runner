@@ -14,6 +14,7 @@ public class GitParser {
     private Map<String, Integer> idMap;
     private Map<Integer, String> reverseIdMap;
     private Map<String, String> renameMap;
+    private GitStats stats;
 
     public GitParser(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -69,8 +70,10 @@ public class GitParser {
     }
 
     public GitStats getStats() {
-        GitStats stats = new GitStats(commits);
-        stats.initStats();
+        if (stats == null) {
+            stats = new GitStats(commits, reverseIdMap);
+            stats.initStats();
+        }
         return stats;
     }
 

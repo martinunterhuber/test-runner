@@ -14,7 +14,6 @@ public class RiskCalculator {
     private HashMap<String, Double> risks;
     private List<Apriori.Combination<String>> combinations = new ArrayList<>();
 
-    private static final double propagationFactor = 0.5;
     private GitStats stats;
 
     public RiskCalculator(MetricMeasure measure, Config config) {
@@ -51,13 +50,17 @@ public class RiskCalculator {
             double riskNew = (stats.creationOf(clazz).getTime() - oldestDate) / timeSpan;
             double riskOftenChanged = stats.changeCountOf(clazz) / (double) maxChanges;
             double riskManyChanged = stats.contributorCountOf(clazz) / (double) maxContributors;
-            risk += riskRecentlyChanged + riskNew + riskOftenChanged + riskManyChanged;
+            risk += riskRecentlyChanged * config.getWeightOf("recency")
+                    + riskNew * config.getWeightOf("new")
+                    + riskOftenChanged * config.getWeightOf("changes")
+                    + riskManyChanged * config.getWeightOf("contributors");
             risks.put(clazz, risk);
         }
         System.out.println("Risks (with files sharing risk + statistical risks)\n" + toLineSeparatedString(risks) + "\n");
     }
 
     public void shareRiskOftenChangedTogether() {
+        double propagationFactor = config.getPropagationFactor();
         HashMap<String, Double> temp = new HashMap<>(risks);
         for (Apriori.Combination<String> combination : combinations) {
             double riskSum = 0d;
