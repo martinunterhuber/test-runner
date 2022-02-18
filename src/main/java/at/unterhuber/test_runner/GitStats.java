@@ -1,16 +1,21 @@
 package at.unterhuber.test_runner;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static at.unterhuber.test_runner.util.CollectionFormatter.toLineSeparatedString;
 
 public class GitStats {
     private final List<GitCommit> commits;
+    private final Map<Integer, String> reverseIdMap;
     private Map<String, Date> lastModified;
     private Map<String, Date> created;
     private Map<String, Integer> numChanges;
     private Map<String, Set<String>> contributors;
 
-    public GitStats(List<GitCommit> commits) {
+    public GitStats(List<GitCommit> commits, Map<Integer, String> reverseIdMap) {
         this.commits = commits;
+        this.reverseIdMap = reverseIdMap;
     }
 
     public void initStats() {
@@ -78,5 +83,35 @@ public class GitStats {
 
     public int contributorCountOf(String clazz) {
         return contributors.getOrDefault(clazz, new HashSet<>()).size();
+    }
+
+    public List<Apriori.Combination<String>> findFilesOftenChangedTogether() {
+        List<Set<Integer>> transactions = new ArrayList<>();
+        for (GitCommit commit: commits) {
+            if (commit.getChanges().isEmpty()) {
+                continue;
+            }
+            Set<Integer> set = commit
+                    .getChanges()
+                    .stream()
+                    .map(GitFileChange::getId)
+                    .collect(Collectors.toSet());
+            transactions.add(set);
+        }
+        double minSupport = Math.sqrt(1d / transactions.size());
+        List<Apriori.Combination<Integer>> idCombinations = null;
+        while (idCombinations == null || idCombinations.size() < 5) {
+            Apriori apriori = new Apriori(transactions, minSupport, 0.8);
+            idCombinations = apriori.find();
+            minSupport /= 1.5;
+        }
+        List<Apriori.Combination<String>> combinations = idCombinations
+                .stream()
+                .map((combination) -> combination.mapWith(reverseIdMap))
+                .collect(Collectors.toList());
+        System.out.println("Files often changed together");
+        System.out.println(toLineSeparatedString(combinations));
+        System.out.println();
+        return combinations;
     }
 }

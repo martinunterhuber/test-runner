@@ -134,37 +134,8 @@ public class Runner {
         threads[5] = new Thread(() -> {
             try {
                 gitParser.parseLog();
-                List<GitCommit> commits = gitParser.getCommits();
-                List<Set<Integer>> transactions = new ArrayList<>();
-                for (GitCommit commit: commits) {
-                    if (commit.getChanges().isEmpty()) {
-                        continue;
-                    }
-                    Set<Integer> set = commit
-                            .getChanges()
-                            .stream()
-                            .map(change -> change.getId())
-                            .collect(Collectors.toSet());
-                    transactions.add(set);
-                }
-                // todo: adapt minSupport
-                double minSupport = Math.sqrt(1d / transactions.size());
-                List<Apriori.Combination<Integer>> idCombinations = null;
-                while (idCombinations == null || idCombinations.size() < 5) {
-                    System.out.println(minSupport);
-                    System.out.println(transactions.size());
-                    System.out.println();
-                    Apriori apriori = new Apriori(transactions, minSupport, 0.8);
-                    idCombinations = apriori.find();
-                    minSupport /= 1.5;
-                }
-                combinations.set(idCombinations
-                        .stream()
-                        .map((combination) -> combination.mapWith(gitParser.getReverseIdMap()))
-                        .collect(Collectors.toList()));
-                System.out.println("Files often changed together");
-                System.out.println(toLineSeparatedString(combinations.get()));
-                System.out.println();
+                GitStats stats = gitParser.getStats();
+                combinations.set(stats.findFilesOftenChangedTogether());
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
