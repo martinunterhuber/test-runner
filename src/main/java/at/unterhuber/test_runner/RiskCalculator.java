@@ -74,7 +74,7 @@ public class RiskCalculator {
             double averageRisk = riskSum / count;
             for (String right : combination.getRightSet()) {
                 Double risk = risks.get(right);
-                if (averageRisk > risk) {
+                if (risk != null && averageRisk > risk) {
                     risk = (risk + averageRisk * propagationFactor) / (1 + propagationFactor);
                     risks.put(right, risk);
                 }

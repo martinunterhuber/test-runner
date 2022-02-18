@@ -53,7 +53,7 @@ public class Config {
     }
 
     public Double getWeightOf(String key) {
-        return weights.get(key);
+        return weights.getOrDefault(key, 0.0);
     }
 
     public double getMetricThreshold() {
