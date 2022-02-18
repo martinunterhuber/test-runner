@@ -1,6 +1,7 @@
 package at.unterhuber.test_runner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,9 +30,31 @@ public class RiskCalculator {
                 risks.put(measurement.getClassName(), value + measurement.getRelativeValue() * config.getWeightOf(measurement.getMetric()));
             }
         }
-        System.out.println("Metrics\n" + toLineSeparatedString(risks) + "\n");
+        System.out.println("Risks\n" + toLineSeparatedString(risks) + "\n");
         shareRiskOftenChangedTogether();
+        addStatisticalRisks();
         return risks;
+    }
+
+    private void addStatisticalRisks() {
+        if (stats == null) {
+            return;
+        }
+        int maxChanges = stats.getMaxChanges();
+        int maxContributors = stats.getMaxContributors();
+        long oldestDate = stats.getOldestDate().getTime();
+        long currentDate = new Date().getTime();
+        double timeSpan = (double) currentDate - oldestDate;
+        for (String clazz : risks.keySet()) {
+            double risk = risks.get(clazz);
+            double riskRecentlyChanged = (stats.lastModificationOf(clazz).getTime() - currentDate + timeSpan) / timeSpan;
+            double riskNew = (stats.creationOf(clazz).getTime() - oldestDate) / timeSpan;
+            double riskOftenChanged = stats.changeCountOf(clazz) / (double) maxChanges;
+            double riskManyChanged = stats.contributorCountOf(clazz) / (double) maxContributors;
+            risk += riskRecentlyChanged + riskNew + riskOftenChanged + riskManyChanged;
+            risks.put(clazz, risk);
+        }
+        System.out.println("Risks (with files sharing risk + statistical risks)\n" + toLineSeparatedString(risks) + "\n");
     }
 
     public void shareRiskOftenChangedTogether() {
@@ -54,7 +77,7 @@ public class RiskCalculator {
                 }
             }
         }
-        System.out.println("Metrics (with sharing risk)\n" + toLineSeparatedString(risks) + "\n");
+        System.out.println("Risks (with files sharing risk)\n" + toLineSeparatedString(risks) + "\n");
     }
 
     public void setCombinations(List<Apriori.Combination<String>> combinations) {

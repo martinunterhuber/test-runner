@@ -35,6 +35,14 @@ public class GitStats {
         }
     }
 
+    public Date getOldestDate() {
+        return lastModified
+                .values()
+                .stream()
+                .min(Date::compareTo)
+                .orElse(new Date(0L));
+    }
+
     public Date lastModificationOf(String clazz) {
         return lastModified.getOrDefault(clazz, new Date(0L));
     }
@@ -43,8 +51,25 @@ public class GitStats {
         return created.getOrDefault(clazz, new Date(0L));
     }
 
+    public int getMaxChanges() {
+        return numChanges
+                .values()
+                .stream()
+                .max(Integer::compareTo)
+                .orElse(1);
+    }
+
     public int changeCountOf(String clazz) {
         return numChanges.getOrDefault(clazz, 0);
+    }
+
+    public int getMaxContributors() {
+        return contributors
+                .values()
+                .stream()
+                .map(Set::size)
+                .max(Integer::compareTo)
+                .orElse(1);
     }
 
     public Set<String> contributorsOf(String clazz) {
