@@ -12,6 +12,7 @@ public class GitParser {
     private final List<GitCommit> commits;
     private Map<String, Integer> idMap;
     private Map<Integer, String> reverseIdMap;
+    private Map<String, String> renameMap;
 
     public GitParser(ProjectPathHandler pathHandler) {
         this.pathHandler = pathHandler;
@@ -35,6 +36,7 @@ public class GitParser {
     public void parseLog() throws IOException, InterruptedException {
         int clazzId = 0;
         idMap = new HashMap<>();
+        renameMap = new HashMap<>();
         String[] commitsString = getLog().split("commit\n");
         for (String commitString : commitsString) {
             String[] lines = commitString.split("\n");
@@ -48,8 +50,8 @@ public class GitParser {
                 if (parts[0].equals("-") || parts.length <= 2 || !parts[2].endsWith(".java")) {
                     continue;
                 }
-                // TODO: consider renames
-                String clazz = pathHandler.getFullClassNameFrom(Path.of(parts[2]));
+                String path = handleRename(parts[2]);
+                String clazz = pathHandler.getFullClassNameFrom(Path.of(path));
                 int index = clazz.lastIndexOf("..");
                 if (index != -1) {
                     clazz = clazz.substring(index + 2);
@@ -63,6 +65,30 @@ public class GitParser {
             }
         }
         reverseIdMap = idMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    }
+
+    private String handleRename(String path) {
+        if (path.contains(" => ")) {
+            String[] pathParts = path.split("[{}]");
+            String oldPath, newPath;
+            if (pathParts.length > 1) {
+                String[] rename = pathParts[1].split(" => ");
+                oldPath = pathParts[0] + rename[0] + pathParts[2];
+                newPath = pathParts[0] + rename[1] + pathParts[2];
+            } else {
+                String[] rename = pathParts[0].split(" => ");
+                oldPath = rename[0];
+                newPath = rename[1];
+            }
+            oldPath = oldPath.replace("//", "/");
+            newPath = newPath.replace("//", "/");
+            renameMap.put(oldPath, newPath);
+            path = newPath;
+        }
+        while (renameMap.containsKey(path)) {
+            path = renameMap.get(path);
+        }
+        return path;
     }
 
     public List<GitCommit> getCommits() {
