@@ -53,8 +53,11 @@ public class RiskCalculator {
             if (stats.creationOf(clazz).equals(new Date(0L))) {
                 continue;
             }
-            double riskRecentlyChanged = (stats.lastModificationOf(clazz).getTime() - currentDate + timeSpan) / timeSpan;
-            double riskNew = (stats.creationOf(clazz).getTime() - oldestDate) / timeSpan;
+            long lastModificationDate = stats.lastModificationOf(clazz).getTime();
+            long creationDate = stats.creationOf(clazz).getTime();
+            double span = currentDate - creationDate;
+            double riskRecentlyChanged = (lastModificationDate - currentDate + span) / span;
+            double riskNew = (creationDate - oldestDate) / timeSpan;
             double riskOftenChanged = stats.changeCountOf(clazz) / (double) maxChanges;
             double riskManyChanged = stats.contributorCountOf(clazz) / (double) maxContributors;
             risk += riskRecentlyChanged * config.getWeightOf("recency")
