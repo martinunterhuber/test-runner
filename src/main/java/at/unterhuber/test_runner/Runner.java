@@ -171,6 +171,8 @@ public class Runner {
 
         calculator.setCombinations(combinations.get());
         calculator.setStats(gitParser.getStats());
+        testCalculator.setCombinations(combinations.get());
+        testCalculator.setStats(gitParser.getStats());
         HashMap<String, Double> risk = calculator.getRiskByClass();
         HashMap<String, Double> testRisk = testCalculator.getRiskByClass();
 

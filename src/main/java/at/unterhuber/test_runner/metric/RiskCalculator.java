@@ -50,6 +50,9 @@ public class RiskCalculator {
         double timeSpan = (double) currentDate - oldestDate;
         for (String clazz : risks.keySet()) {
             double risk = risks.get(clazz);
+            if (stats.creationOf(clazz).equals(new Date(0L))) {
+                continue;
+            }
             double riskRecentlyChanged = (stats.lastModificationOf(clazz).getTime() - currentDate + timeSpan) / timeSpan;
             double riskNew = (stats.creationOf(clazz).getTime() - oldestDate) / timeSpan;
             double riskOftenChanged = stats.changeCountOf(clazz) / (double) maxChanges;
