@@ -1,0 +1,34 @@
+
+commit
+0748f7f
+m.unterhuber99@gmail.com
+1645204047
+
+7	0	test.properties
+
+commit
+4d79759
+m.unterhuber99@gmail.com
+1642522767
+
+3	2	build.gradle
+1	0	src/test/java/at/unterhuber/test/Test2.java
+3	1	test.properties
+
+commit
+262f7d2
+m.unterhuber99@gmail.com
+1642511902
+
+0	0	src/test/java/at/unterhuber/{ => test}/Junit4Test1.java
+0	0	src/test/java/at/unterhuber/test/{Test1.java => Testx.java}
+0	0	test/Test2.java => src/test/java/at/unterhuber/test/Test2.java
+
+commit
+262f7d2
+m.unterhuber99@gmail.com
+1642437032
+
+19	0	src/test/java/at/unterhuber/Junit4Test1.java
+20	0	src/test/java/at/unterhuber/test/Test1.java
+10	0	test/Test2.java
