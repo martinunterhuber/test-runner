@@ -41,7 +41,7 @@ public class GitStats {
     }
 
     public Date getOldestDate() {
-        return lastModified
+        return created
                 .values()
                 .stream()
                 .min(Date::compareTo)

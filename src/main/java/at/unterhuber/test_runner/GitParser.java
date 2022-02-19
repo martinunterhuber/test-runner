@@ -15,13 +15,19 @@ public class GitParser {
     private Map<Integer, String> reverseIdMap;
     private Map<String, String> renameMap;
     private GitStats stats;
+    private String log;
 
     public GitParser(ProjectPathHandler pathHandler) {
-        this.pathHandler = pathHandler;
-        this.commits = new ArrayList<>();
+        this(pathHandler, null);
     }
 
-    private String getLog() throws InterruptedException, IOException {
+    public GitParser(ProjectPathHandler pathHandler, String log) {
+        this.pathHandler = pathHandler;
+        this.commits = new ArrayList<>();
+        this.log = log;
+    }
+
+    private void getLog() throws InterruptedException, IOException {
         Process process = new ProcessBuilder(
                 "git",
                 "--no-pager",
@@ -32,14 +38,17 @@ public class GitParser {
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String result = br.lines().collect(Collectors.joining("\n"));
         process.waitFor();
-        return result;
+        log = result;
     }
 
     public void parseLog() throws IOException, InterruptedException {
+        if (log == null) {
+            getLog();
+        }
         int clazzId = 0;
         idMap = new HashMap<>();
         renameMap = new HashMap<>();
-        String[] commitsString = getLog().split("commit\n");
+        String[] commitsString = log.split("commit\n");
         for (String commitString : commitsString) {
             String[] lines = commitString.split("\n");
             if (lines.length == 0) {
@@ -49,7 +58,7 @@ public class GitParser {
             commits.add(commit);
             for (String line : Arrays.stream(lines).skip(4).collect(Collectors.toList())) {
                 String[] parts = line.split("\t");
-                if (parts[0].equals("-") || parts.length <= 2 || !parts[2].endsWith(".java")) {
+                if (parts[0].equals("-") || parts.length <= 2 || !parts[2].contains(".java")) {
                     continue;
                 }
                 String path = handleRename(parts[2]);
@@ -83,8 +92,8 @@ public class GitParser {
             String oldPath, newPath;
             if (pathParts.length > 1) {
                 String[] rename = pathParts[1].split(" => ");
-                oldPath = pathParts[0] + rename[0] + pathParts[2];
-                newPath = pathParts[0] + rename[1] + pathParts[2];
+                oldPath = pathParts[0] + rename[0] + (pathParts.length > 2 ? pathParts[2] : "");
+                newPath = pathParts[0] + rename[1] + (pathParts.length > 2 ? pathParts[2] : "");
             } else {
                 String[] rename = pathParts[0].split(" => ");
                 oldPath = rename[0];
