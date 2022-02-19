@@ -1,6 +1,5 @@
 package at.unterhuber.test_runner.issue;
 
-import at.unterhuber.test_runner.issue.IssueMeasure;
 import at.unterhuber.test_runner.path.GradlePathHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

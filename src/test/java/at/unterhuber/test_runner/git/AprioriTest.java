@@ -1,6 +1,5 @@
 package at.unterhuber.test_runner.git;
 
-import at.unterhuber.test_runner.git.Apriori;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,10 +13,10 @@ public class AprioriTest {
     @BeforeEach
     public void setup() {
         List<Set<Integer>> transactions = List.of(
-            Set.of(1, 2, 3),
-            Set.of(2, 3, 4),
-            Set.of(2, 3),
-            Set.of(1, 3)
+                Set.of(1, 2, 3),
+                Set.of(2, 3, 4),
+                Set.of(2, 3),
+                Set.of(1, 3)
         );
         apriori = new Apriori(transactions, 0.5, 0.8);
     }

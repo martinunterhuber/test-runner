@@ -1,7 +1,5 @@
 package at.unterhuber.test_runner.test;
 
-import at.unterhuber.test_runner.test.DummyTestSelector;
-import at.unterhuber.test_runner.test.TestExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

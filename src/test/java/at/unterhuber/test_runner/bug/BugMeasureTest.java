@@ -1,6 +1,5 @@
 package at.unterhuber.test_runner.bug;
 
-import at.unterhuber.test_runner.bug.BugsMeasure;
 import at.unterhuber.test_runner.path.GradlePathHandler;
 import at.unterhuber.test_runner.path.ProjectPathHandler;
 import at.unterhuber.test_runner.util.FileClassLoader;

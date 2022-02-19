@@ -35,7 +35,7 @@ public class CollectionFormatter {
             sb.append('{').append('\n');
 
             while (true) {
-                Map.Entry<K, V> e = (Map.Entry) i.next();
+                Map.Entry<K, V> e = i.next();
                 K key = e.getKey();
                 V value = e.getValue();
                 sb.append(' ');

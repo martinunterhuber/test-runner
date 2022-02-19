@@ -1,9 +1,5 @@
 package at.unterhuber.test_runner.metric;
 
-import at.unterhuber.test_runner.metric.Measurement;
-import at.unterhuber.test_runner.metric.Metric;
-import at.unterhuber.test_runner.metric.MetricMeasure;
-
 import java.util.List;
 import java.util.Map;
 

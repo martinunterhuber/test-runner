@@ -1,7 +1,5 @@
 package at.unterhuber.test_runner.metric;
 
-import at.unterhuber.test_runner.metric.DummyMetricMeasure;
-import at.unterhuber.test_runner.metric.RiskCalculator;
 import at.unterhuber.test_runner.util.Config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

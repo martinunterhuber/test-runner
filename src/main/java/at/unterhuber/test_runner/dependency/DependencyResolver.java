@@ -1,7 +1,7 @@
 package at.unterhuber.test_runner.dependency;
 
-import at.unterhuber.test_runner.util.FileClassLoader;
 import at.unterhuber.test_runner.path.ProjectPathHandler;
+import at.unterhuber.test_runner.util.FileClassLoader;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;

@@ -2,8 +2,6 @@ package at.unterhuber.test_runner.metric;
 
 import at.unterhuber.test_runner.git.Apriori;
 import at.unterhuber.test_runner.git.GitStats;
-import at.unterhuber.test_runner.metric.Measurement;
-import at.unterhuber.test_runner.metric.MetricMeasure;
 import at.unterhuber.test_runner.util.Config;
 
 import java.util.ArrayList;

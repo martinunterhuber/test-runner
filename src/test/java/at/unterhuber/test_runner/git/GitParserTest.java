@@ -1,11 +1,10 @@
 package at.unterhuber.test_runner.git;
 
-import at.unterhuber.test_runner.git.GitCommit;
-import at.unterhuber.test_runner.git.GitFileChange;
-import at.unterhuber.test_runner.git.GitParser;
-import at.unterhuber.test_runner.git.GitStats;
 import at.unterhuber.test_runner.path.GradlePathHandler;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,7 +1,5 @@
 package at.unterhuber.test_runner.git;
 
-import at.unterhuber.test_runner.git.GitCommit;
-import at.unterhuber.test_runner.git.GitStats;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

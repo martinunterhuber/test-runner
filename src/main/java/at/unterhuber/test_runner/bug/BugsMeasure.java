@@ -1,7 +1,7 @@
 package at.unterhuber.test_runner.bug;
 
-import at.unterhuber.test_runner.util.FileClassLoader;
 import at.unterhuber.test_runner.path.ProjectPathHandler;
+import at.unterhuber.test_runner.util.FileClassLoader;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
