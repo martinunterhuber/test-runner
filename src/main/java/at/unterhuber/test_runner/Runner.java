@@ -1,5 +1,23 @@
 package at.unterhuber.test_runner;
 
+import at.unterhuber.test_runner.bug.Bug;
+import at.unterhuber.test_runner.bug.BugsMeasure;
+import at.unterhuber.test_runner.dependency.DependencyResolver;
+import at.unterhuber.test_runner.git.Apriori;
+import at.unterhuber.test_runner.git.GitParser;
+import at.unterhuber.test_runner.git.GitStats;
+import at.unterhuber.test_runner.issue.Issue;
+import at.unterhuber.test_runner.issue.IssueMeasure;
+import at.unterhuber.test_runner.metric.Metric;
+import at.unterhuber.test_runner.metric.MetricMeasure;
+import at.unterhuber.test_runner.metric.RiskCalculator;
+import at.unterhuber.test_runner.path.GradlePathHandler;
+import at.unterhuber.test_runner.path.MavenPathHandler;
+import at.unterhuber.test_runner.path.ProjectPathHandler;
+import at.unterhuber.test_runner.test.TestExecutor;
+import at.unterhuber.test_runner.test.TestSelector;
+import at.unterhuber.test_runner.util.Config;
+import at.unterhuber.test_runner.util.FileClassLoader;
 import edu.umd.cs.findbugs.Priorities;
 
 import java.io.IOException;
