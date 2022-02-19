@@ -154,4 +154,8 @@ public class Apriori {
             return leftSet + " ==> " + rightSet;
         }
     }
+
+    public List<Set<Integer>> get() {
+        return frequentItemSets;
+    }
 }

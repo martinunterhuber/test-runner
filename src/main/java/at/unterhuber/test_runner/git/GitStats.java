@@ -100,10 +100,12 @@ public class GitStats {
         }
         double minSupport = Math.sqrt(1d / transactions.size());
         List<Apriori.Combination<Integer>> idCombinations = null;
-        while (idCombinations == null || idCombinations.size() < 5) {
-            Apriori apriori = new Apriori(transactions, minSupport, 0.8);
+        Apriori apriori = null;
+        while ((idCombinations == null || idCombinations.size() < 5) && (apriori == null || apriori.get().size() < 100)) {
+            System.out.println(minSupport);
+            apriori = new Apriori(transactions, minSupport, 0.8);
             idCombinations = apriori.find();
-            minSupport /= 1.5;
+            minSupport /= 1.3;
         }
         List<Apriori.Combination<String>> combinations = idCombinations
                 .stream()
