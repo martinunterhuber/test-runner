@@ -38,10 +38,10 @@ public class ConfigTest {
     public void test_thresholds() {
         Assertions.assertEquals(3.0, config.getMetricThreshold());
         Assertions.assertEquals(1.5, config.getTestMetricThreshold());
-        Assertions.assertEquals(100, config.getIssueThreshold());
-        Assertions.assertEquals(100, config.getTestIssueThreshold());
-        Assertions.assertEquals(20, config.getBugThreshold());
-        Assertions.assertEquals(20, config.getTestBugThreshold());
+        Assertions.assertEquals(5, config.getIssueThreshold());
+        Assertions.assertEquals(5, config.getTestIssueThreshold());
+        Assertions.assertEquals(5, config.getBugThreshold());
+        Assertions.assertEquals(5, config.getTestBugThreshold());
     }
 
     @AfterEach

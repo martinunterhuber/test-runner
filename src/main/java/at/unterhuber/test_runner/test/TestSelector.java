@@ -9,7 +9,6 @@ import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,8 +73,6 @@ public class TestSelector {
                         .reduce(Integer::sum)
                         .orElse(0) > config.getIssueThreshold())
                 .map(Map.Entry::getKey)
-                .map(Path::of)
-                .map(loader::getFullClassNameFrom)
                 .collect(Collectors.toSet());
     }
 
@@ -126,8 +123,6 @@ public class TestSelector {
                         .reduce(Integer::sum)
                         .orElse(0) > config.getTestIssueThreshold())
                 .map(Map.Entry::getKey)
-                .map(Path::of)
-                .map(loader::getFullClassNameFrom)
                 .collect(Collectors.toSet());
     }
 
@@ -157,5 +152,13 @@ public class TestSelector {
         );
         System.out.println("Selected tests\n" + toLineSeparatedString(selectors) + "\n");
         return new ArrayList<>(selectors);
+    }
+
+    public Set<String> getClassesToTest() {
+        return classesToTest;
+    }
+
+    public Set<String> getTestClassesToRun() {
+        return testClassesToRun;
     }
 }

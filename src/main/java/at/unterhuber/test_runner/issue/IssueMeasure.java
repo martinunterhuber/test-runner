@@ -7,6 +7,7 @@ import net.sourceforge.pmd.util.datasource.DataSource;
 
 import java.io.IOException;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +33,10 @@ public class IssueMeasure {
             } else {
                 issuesByClass = testIssues;
             }
-            List<Issue> issuesList = issuesByClass.getOrDefault(violation.getFilename(), new ArrayList<>());
+            String clazz = pathHandler.getFullClassNameFrom(Path.of(violation.getFilename()));
+            List<Issue> issuesList = issuesByClass.getOrDefault(clazz, new ArrayList<>());
             issuesList.add(new Issue(violation));
-            issuesByClass.put(violation.getFilename(), issuesList);
+            issuesByClass.put(clazz, issuesList);
         }
         printIssues(issues);
         printIssues(testIssues);
@@ -43,7 +45,7 @@ public class IssueMeasure {
     public void printIssues(Map<String, List<Issue>> issues) {
         System.out.println("Issues\n" + toLineSeparatedString(issues.entrySet()
                 .stream()
-                .map(entry -> new AbstractMap.SimpleEntry<>(pathHandler.pathToFullClassName(entry.getKey()), entry.getValue()
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()
                         .stream()
                         .map(Issue::computeRisk)
                         .reduce(Integer::sum)

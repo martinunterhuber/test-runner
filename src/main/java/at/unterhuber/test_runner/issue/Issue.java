@@ -5,15 +5,24 @@ import net.sourceforge.pmd.RuleViolation;
 
 public class Issue {
     private final RuleViolation violation;
+    private RulePriority priority;
 
     public Issue(RuleViolation violation) {
         this.violation = violation;
     }
 
+    public Issue(RulePriority priority) {
+        this.violation = null;
+        this.priority = priority;
+    }
+
     public int computeRisk() {
-        int priority = violation.getRule().getPriority().getPriority();
+        if (violation != null) {
+            priority = violation.getRule().getPriority();
+        }
+        int priorityValue = priority.getPriority();
 
         // Lowest priority has the highest value in PMD, this will reverse it
-        return (RulePriority.LOW.getPriority() + 1) - priority;
+        return (RulePriority.LOW.getPriority() + 1) - priorityValue;
     }
 }
