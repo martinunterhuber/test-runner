@@ -147,7 +147,7 @@ public class TestSelectorTest {
     @Test
     public void testSelectTestClasses() throws IOException {
         HashMap<String, Double> testRisk = new HashMap<>();
-        Map<String, List<Issue>>  testIssues = new HashMap<>();
+        Map<String, List<Issue>> testIssues = new HashMap<>();
         Map<String, List<Bug>> testBugs = new HashMap<>();
 
         risk.put("at.unterhuber.test.MyClass", 2.5);

@@ -122,6 +122,10 @@ public class Apriori {
         frequentItemSets.addAll(itemSets);
     }
 
+    public List<Set<Integer>> get() {
+        return frequentItemSets;
+    }
+
     public static class Combination<T> {
         private final Set<T> leftSet;
         private final Set<T> rightSet;
@@ -153,9 +157,5 @@ public class Apriori {
         public String toString() {
             return leftSet + " ==> " + rightSet;
         }
-    }
-
-    public List<Set<Integer>> get() {
-        return frequentItemSets;
     }
 }

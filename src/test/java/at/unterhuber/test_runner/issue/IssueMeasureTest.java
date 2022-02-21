@@ -18,13 +18,13 @@ public class IssueMeasureTest {
     }
 
     @Test
-    public void test_getIssues() {
+    public void testGetIssues() {
         Assertions.assertEquals(1, issueMeasure.getIssues().size());
         Assertions.assertTrue(issueMeasure.getIssues().containsKey("at.unterhuber.test.Main"));
     }
 
     @Test
-    public void test_getTestIssues() {
+    public void testGetTestIssues() {
         Assertions.assertEquals(3, issueMeasure.getTestIssues().size());
         Assertions.assertTrue(issueMeasure.getTestIssues().containsKey("at.unterhuber.test.subpackage.Test3"));
         Assertions.assertTrue(issueMeasure.getTestIssues().containsKey("at.unterhuber.test.Test2"));

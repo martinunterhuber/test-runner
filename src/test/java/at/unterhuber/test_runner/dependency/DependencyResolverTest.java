@@ -26,13 +26,13 @@ public class DependencyResolverTest {
     }
 
     @Test
-    public void test_resolveDependencies() throws IOException {
+    public void testResolveDependencies() throws IOException {
         Set<String> expected = Set.of("at.unterhuber.test.ClassToTest", "at.unterhuber.test.subpackage.AnotherClassToTest", "at.unterhuber.test.subpackage.Test3", "at.unterhuber.test.Junit4Test1");
         Assertions.assertEquals(expected, resolver.resolveDependenciesFor(List.of("at.unterhuber.test.ClassToTest")));
     }
 
     @Test
-    public void test_resolveDependenciesRecursive() throws IOException {
+    public void testResolveDependenciesRecursive() throws IOException {
         Set<String> expected = Set.of("at.unterhuber.test.ClassToTest", "at.unterhuber.test.subpackage.AnotherClassToTest", "at.unterhuber.test.subpackage.Test3", "at.unterhuber.test.Junit4Test1");
         Assertions.assertEquals(expected, resolver.resolveDependenciesFor(List.of("at.unterhuber.test.ClassToTest"), 5));
     }

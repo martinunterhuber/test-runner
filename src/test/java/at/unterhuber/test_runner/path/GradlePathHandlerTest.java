@@ -18,37 +18,37 @@ public class GradlePathHandlerTest {
     }
 
     @Test
-    public void test_getRootPath() {
+    public void testGetRootPath() {
         Assertions.assertEquals(ROOT, pathHandler.getRootPath().toString());
     }
 
     @Test
-    public void test_getSourcePath() {
+    public void testGetSourcePath() {
         Assertions.assertEquals(ROOT + "/src", pathHandler.getSourcePath().toString());
     }
 
     @Test
-    public void test_getClassPath() {
+    public void testGetClassPath() {
         Assertions.assertEquals(ROOT + "/build/classes/java", pathHandler.getClassPath().toString());
     }
 
     @Test
-    public void test_getMainSourcePath() {
+    public void testGetMainSourcePath() {
         Assertions.assertEquals(ROOT + "/src/main/java", pathHandler.getMainSourcePath().toString());
     }
 
     @Test
-    public void test_getMainClassPath() {
+    public void testGetMainClassPath() {
         Assertions.assertEquals(ROOT + "/build/classes/java/main", pathHandler.getMainClassPath().toString());
     }
 
     @Test
-    public void test_getTestSourcePath() {
+    public void testGetTestSourcePath() {
         Assertions.assertEquals(ROOT + "/src/test/java", pathHandler.getTestSourcePath().toString());
     }
 
     @Test
-    public void test_getTestClassPath() {
+    public void testGetTestClassPath() {
         Assertions.assertEquals(ROOT + "/build/classes/java/test", pathHandler.getTestClassPath().toString());
     }
 
@@ -58,7 +58,7 @@ public class GradlePathHandlerTest {
             ROOT + "/src/main/java/my/package/C2.java",
             ROOT + "/src/main/java/my/package/subpackage/C3.java",
     })
-    public void test_isMainSourcePath_returnsTrue(String path) {
+    public void testIsMainSourcePath_returnsTrue(String path) {
         Assertions.assertTrue(pathHandler.isMainSourcePath(path));
     }
 
@@ -70,7 +70,7 @@ public class GradlePathHandlerTest {
             "/not/root/src/main/java/my/package/subpackage/C4.java",
             "src/main/java/C5.java"
     })
-    public void test_isMainSourcePath_returnsFalse(String path) {
+    public void testIsMainSourcePath_returnsFalse(String path) {
         Assertions.assertFalse(pathHandler.isMainSourcePath(path));
     }
 
@@ -80,7 +80,7 @@ public class GradlePathHandlerTest {
             ROOT + "/src/test/java/my/package/T2.java",
             ROOT + "/src/test/java/my/package/subpackage/T3.java",
     })
-    public void test_isTestSourcePath_returnsTrue(String path) {
+    public void testIsTestSourcePath_returnsTrue(String path) {
         Assertions.assertTrue(pathHandler.isTestSourcePath(path));
     }
 
@@ -92,7 +92,7 @@ public class GradlePathHandlerTest {
             "/not/root/src/test/java/my/package/subpackage/T4.java",
             "src/test/java/T5.java"
     })
-    public void test_isTestSourcePath_returnsFalse(String path) {
+    public void testIsTestSourcePath_returnsFalse(String path) {
         Assertions.assertFalse(pathHandler.isTestSourcePath(path));
     }
 
@@ -104,7 +104,7 @@ public class GradlePathHandlerTest {
             "my.package.C4,build/classes/java/main/my/package/C4.class",
             "my.package.T5,build/classes/java/test/my/package/T5.class",
     })
-    public void test_pathToFullClassName_validPaths(String expected, String path) {
+    public void testPathToFullClassName_validPaths(String expected, String path) {
         Assertions.assertEquals(expected, pathHandler.pathToFullClassName(path));
     }
 
@@ -113,7 +113,7 @@ public class GradlePathHandlerTest {
             "src/asdf/java/C1.java",
             "test/T2.java"
     })
-    public void test_pathToFullClassName_invalidPathsReturnNull(String path) {
+    public void testPathToFullClassName_invalidPathsReturnNull(String path) {
         Assertions.assertNull(pathHandler.pathToFullClassName(path));
     }
 

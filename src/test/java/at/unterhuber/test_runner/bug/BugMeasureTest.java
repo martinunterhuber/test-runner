@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class BugMeasureTest {
     private BugsMeasure bugMeasure;
@@ -25,13 +26,15 @@ public class BugMeasureTest {
     }
 
     @Test
-    public void test_getBugs() {
+    public void testGetBugs() {
         Assertions.assertEquals(1, bugMeasure.getBugs().size());
+        Assertions.assertEquals(Set.of("at.unterhuber.test.Main"), bugMeasure.getBugs().keySet());
     }
 
     @Test
-    public void test_getTestBugs() {
+    public void testGetTestBugs() {
         Assertions.assertEquals(1, bugMeasure.getTestBugs().size());
+        Assertions.assertEquals(Set.of("at.unterhuber.test.Test2"), bugMeasure.getTestBugs().keySet());
     }
 
     @AfterEach

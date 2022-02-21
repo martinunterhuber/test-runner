@@ -17,25 +17,25 @@ public class ConfigTest {
     }
 
     @Test
-    public void test_getWeightOf() {
+    public void testGetWeightOf() {
         Assertions.assertEquals(0.5, config.getWeightOf("Loc"));
         Assertions.assertEquals(2, config.getWeightOf("Wmc"));
     }
 
     @Test
-    public void test_invalidPath_shouldFallbackToDefault() {
+    public void testInvalidPath_shouldFallbackToDefault() {
         config = new Config(Path.of("src"), Path.of(""));
         config.loadConfigFromFile();
     }
 
     @Test
-    public void test_invalidPaths_shouldThrow() {
+    public void testInvalidPaths_shouldThrow() {
         config = new Config(Path.of("src"), Path.of("src"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> config.loadConfigFromFile());
     }
 
     @Test
-    public void test_thresholds() {
+    public void testThresholds() {
         Assertions.assertEquals(3.0, config.getMetricThreshold());
         Assertions.assertEquals(1.5, config.getTestMetricThreshold());
         Assertions.assertEquals(5, config.getIssueThreshold());

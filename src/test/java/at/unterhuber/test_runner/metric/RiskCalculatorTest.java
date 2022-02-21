@@ -21,7 +21,7 @@ public class RiskCalculatorTest {
     }
 
     @Test
-    public void test_getMeasurement() {
+    public void testGetMeasurement() {
         Map<String, Double> expected = Map.of("C1", 1.25, "C2", 1.5);
         Assertions.assertEquals(expected, riskCalculator.getRiskByClass());
     }

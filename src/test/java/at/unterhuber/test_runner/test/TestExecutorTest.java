@@ -14,7 +14,7 @@ public class TestExecutorTest {
     }
 
     @Test
-    public void test_executesFailingTest_shouldThrow() {
+    public void testExecutesFailingTest_shouldThrow() {
         Assertions.assertThrows(RuntimeException.class, () -> executor.executeTests());
     }
 
