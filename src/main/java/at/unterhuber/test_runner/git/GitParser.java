@@ -95,7 +95,7 @@ public class GitParser {
             if (pathParts.length > 1) {
                 String[] rename = pathParts[1].split(" => ");
                 oldPath = pathParts[0] + rename[0] + (pathParts.length > 2 ? pathParts[2] : "");
-                newPath = pathParts[0] + (rename.length > 2 ? rename[1] : "") + (pathParts.length > 2 ? pathParts[2] : "");
+                newPath = pathParts[0] + (rename.length >= 2 ? rename[1] : "") + (pathParts.length > 2 ? pathParts[2] : "");
             } else {
                 String[] rename = pathParts[0].split(" => ");
                 oldPath = rename[0];
