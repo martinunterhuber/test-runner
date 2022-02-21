@@ -32,10 +32,6 @@ public class Measurement {
         return metric.name;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     @Override
     public String toString() {
         return "Measurement{" +

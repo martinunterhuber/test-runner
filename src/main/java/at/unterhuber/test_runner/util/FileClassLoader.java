@@ -28,19 +28,7 @@ public class FileClassLoader {
         return relative.toString().replace("/", ".").replace(".java", "");
     }
 
-    public String getFullMainClassNameFrom(Path path) {
-        Path relative = pathHandler.getMainSourcePath().relativize(pathHandler.getRootPath().resolve(path));
-        return relative.toString().replace("/", ".").replace(".java", "");
-    }
-
-    public String getFullClassNameFrom(Path path) {
-        Path relativeMain = pathHandler.getMainSourcePath().relativize(pathHandler.getRootPath().resolve(path));
-        Path relativeTest = pathHandler.getTestSourcePath().relativize(pathHandler.getRootPath().resolve(path));
-        Path relative = relativeMain.toString().startsWith("../") ? relativeTest : relativeMain;
-        return relative.toString().replace("/", ".").replace(".java", "");
-    }
-
-    public void initClassLoader() throws MalformedURLException, ClassNotFoundException {
+    public void initClassLoader() throws MalformedURLException {
         List<URL> urls = new ArrayList<>();
         try {
             urls = Files.walk(pathHandler.getClassPath().resolve("dependency"))
@@ -82,10 +70,6 @@ public class FileClassLoader {
 
     public Set<String> getTestClassesNames() {
         return testClassesNames;
-    }
-
-    public List<? extends Class<?>> getTestClasses() {
-        return testClasses;
     }
 
     public boolean isTestClass(String clazz) {

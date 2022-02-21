@@ -13,7 +13,6 @@ public class GitParser {
     private final ProjectPathHandler pathHandler;
     private final List<GitCommit> commits;
 
-    private Map<String, Integer> idMap;
     private Map<Integer, String> reverseIdMap;
     private Map<String, String> renameMap;
     private GitStats stats;
@@ -48,7 +47,7 @@ public class GitParser {
             getLog();
         }
         int clazzId = 0;
-        idMap = new HashMap<>();
+        Map<String, Integer> idMap = new HashMap<>();
         renameMap = new HashMap<>();
         String[] commitsString = log.split("commit\n");
         for (String commitString : commitsString) {
@@ -118,7 +117,4 @@ public class GitParser {
         return commits;
     }
 
-    public Map<Integer, String> getReverseIdMap() {
-        return reverseIdMap;
-    }
 }

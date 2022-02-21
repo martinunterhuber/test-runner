@@ -107,7 +107,7 @@ public class GitStats {
             idCombinations = apriori.find();
             minSupport /= 1.3;
         }
-        List<Apriori.Combination<String>> combinations = idCombinations
+        List<Apriori.Combination<String>> combinations = Objects.requireNonNull(idCombinations)
                 .stream()
                 .map((combination) -> combination.mapWith(reverseIdMap))
                 .collect(Collectors.toList());

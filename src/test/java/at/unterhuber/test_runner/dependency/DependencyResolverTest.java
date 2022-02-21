@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 public class DependencyResolverTest {
-    private final String PACKAGE = "at.unterhuber.test";
     private DependencyResolver resolver;
 
     @BeforeEach
@@ -22,6 +21,7 @@ public class DependencyResolverTest {
         FileClassLoader cl = new FileClassLoader(handler);
         cl.initClassLoader();
         cl.loadTestClasses();
+        String PACKAGE = "at.unterhuber.test";
         resolver = new DependencyResolver(cl, handler, PACKAGE);
     }
 

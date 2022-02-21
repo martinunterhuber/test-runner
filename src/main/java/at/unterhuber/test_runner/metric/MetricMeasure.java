@@ -57,7 +57,6 @@ public class MetricMeasure {
                 measurement.forMaxValue(max);
             }
         }
-        // printSelectedMetrics();
     }
 
     public void printSelectedMetrics() {
