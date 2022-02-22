@@ -79,7 +79,7 @@ public class Apriori {
 
     private void createItemSetsOfSize1() {
         itemSets = new ArrayList<>();
-        for (int i = 0; i < numItems; i++) {
+        for (int i = 1; i <= numItems; i++) {
             itemSets.add(Set.of(i));
         }
     }
