@@ -172,8 +172,8 @@ public class TestSelectorTest {
 
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
-        List<DiscoverySelector> discoverySelectors = selector.selectTestClasses();
+        List<String> classes = selector.selectTestClasses();
 
-        Assertions.assertEquals(List.of(selectClass("at.unterhuber.test.MyTestClass"), selectClass("at.unterhuber.test.MyOtherTestClass")), discoverySelectors);
+        Assertions.assertEquals(List.of("at.unterhuber.test.MyTestClass", "at.unterhuber.test.MyOtherTestClass"), classes);
     }
 }

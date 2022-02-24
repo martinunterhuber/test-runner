@@ -9,21 +9,70 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    analyze {
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+
+    execute {
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+configurations {
+    analyzeImplementation.extendsFrom implementation
+    executeImplementation.extendsFrom implementation
+}
+
 dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    implementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    implementation 'org.junit.platform:junit-platform-launcher:1.8.2'
-    implementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.8.2'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
 
-    implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
-    implementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
+    testImplementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+    testImplementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
 
-    implementation 'com.github.mauricioaniche:ck:0.7.0'
-    implementation 'net.sourceforge.pmd:pmd-java:6.42.0'
-    implementation 'org.jgrapht:jgrapht-core:1.5.1'
-    implementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
-    implementation 'com.github.spotbugs:spotbugs:4.5.3'
+    testImplementation 'com.github.mauricioaniche:ck:0.7.0'
+    testImplementation 'net.sourceforge.pmd:pmd-java:6.42.0'
+    testImplementation 'org.jgrapht:jgrapht-core:1.5.1'
+    testImplementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
+    testImplementation 'com.github.spotbugs:spotbugs:4.5.3'
+
+    executeImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    executeImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    executeImplementation 'org.junit.platform:junit-platform-launcher:1.8.2'
+    executeImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
+    executeImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+
+    testCompileOnly 'net.sourceforge.pmd:pmd-java:6.42.0'
+    testCompileOnly 'com.github.spotbugs:spotbugs-annotations:4.5.3'
+    testCompileOnly 'com.github.spotbugs:spotbugs:4.5.3'
+
+    compileOnly 'org.slf4j:slf4j-api:1.8.0-beta4'
+    compileOnly 'org.slf4j:slf4j-nop:1.8.0-beta4'
+
+    compileOnly 'com.github.mauricioaniche:ck:0.7.0'
+    compileOnly 'net.sourceforge.pmd:pmd-java:6.42.0'
+    compileOnly 'org.jgrapht:jgrapht-core:1.5.1'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.5.3'
+    compileOnly 'com.github.spotbugs:spotbugs:4.5.3'
+
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    compileOnly 'org.junit.platform:junit-platform-launcher:1.8.2'
+    compileOnly 'org.junit.vintage:junit-vintage-engine:5.8.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+
+    analyzeImplementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+    analyzeImplementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
+
+    analyzeImplementation 'com.github.mauricioaniche:ck:0.7.0'
+    analyzeImplementation 'net.sourceforge.pmd:pmd-java:6.42.0'
+    analyzeImplementation 'org.jgrapht:jgrapht-core:1.5.1'
+    analyzeImplementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
+    analyzeImplementation 'com.github.spotbugs:spotbugs:4.5.3'
 }
 
 test {
@@ -44,15 +93,35 @@ class TestTask extends DefaultTask {
 
 
 task doCustomTest(type: TestTask) {
-    doLast {
+    doFirst {
         fileTree(dir: "$directory").filter { file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
             def dir = file.getParent()
+            def out = new ByteArrayOutputStream()
+            if (file.toString().endsWith("build.gradle")) {
+                exec {
+                    String selfDirectory = workingDir
+                    workingDir "$directory"
+                    commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "getRuntimeClasspath"
+                    standardOutput = out
+                }
+            }
             javaexec {
-                classpath = files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency") + sourceSets.main.runtimeClasspath
+                classpath = sourceSets.analyze.runtimeClasspath
                 mainClass = 'at.unterhuber.test_runner.Runner'
-                def selfDirectory = workingDir
+                String selfDirectory = workingDir
                 workingDir = dir
-                args dir, packageName, selfDirectory
+                args = [dir, packageName, selfDirectory]
+            }
+
+            javaexec {
+                classpath = sourceSets.execute.runtimeClasspath
+                out.toString()?.split(":")?.each {
+                    classpath += files(it)
+                }
+                classpath += files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency")
+                classpath += files(dir + "/build/classes/java/main") + files(dir + "/build/classes/java") + files(dir + "/build/classes/java/test")
+                mainClass = 'at.unterhuber.test_runner.executor.TestExecutor'
+                workingDir = dir
             }
         }
     }

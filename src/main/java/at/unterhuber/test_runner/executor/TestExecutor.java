@@ -1,5 +1,8 @@
-package at.unterhuber.test_runner.test;
+package at.unterhuber.test_runner.executor;
 
+import at.unterhuber.test_runner.test.TestSelector;
+import org.junit.platform.engine.discovery.ClassSelector;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.LauncherSession;
@@ -10,19 +13,28 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 
 public class TestExecutor {
-    private final TestSelector selector;
-
-    public TestExecutor(TestSelector selector) {
-        this.selector = selector;
+    public static void main(String[] args) throws IOException {
+        executeTests();
     }
 
-    public void executeTests() throws IOException {
+    public static void executeTests() throws IOException {
+        String testsToRun = Files.readString(Path.of("tests_to_run.txt"));
+        List<ClassSelector> selectors = Arrays.stream(
+                    testsToRun.replace("[", "").replace("]", "").split(", ")
+                ).map(DiscoverySelectors::selectClass)
+                .collect(Collectors.toList());
+
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selector.selectTestClasses())
+                .selectors(selectors)
                 .filters(includeClassNamePatterns(".*"))
                 .build();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();

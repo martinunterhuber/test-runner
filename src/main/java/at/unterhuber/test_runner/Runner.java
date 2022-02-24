@@ -14,7 +14,7 @@ import at.unterhuber.test_runner.metric.RiskCalculator;
 import at.unterhuber.test_runner.path.GradlePathHandler;
 import at.unterhuber.test_runner.path.MavenPathHandler;
 import at.unterhuber.test_runner.path.ProjectPathHandler;
-import at.unterhuber.test_runner.test.TestExecutor;
+import at.unterhuber.test_runner.executor.TestExecutor;
 import at.unterhuber.test_runner.test.TestSelector;
 import at.unterhuber.test_runner.util.Config;
 import at.unterhuber.test_runner.util.FileClassLoader;
@@ -79,7 +79,6 @@ public class Runner {
         FileClassLoader loader = new FileClassLoader(pathHandler);
         DependencyResolver resolver = new DependencyResolver(loader, pathHandler, packageName);
         TestSelector selector = new TestSelector(loader, config, resolver);
-        TestExecutor executor = new TestExecutor(selector);
         MetricMeasure measure = new MetricMeasure(pathHandler.getMainSourcePath().toString(), metrics);
         MetricMeasure testMeasure = new MetricMeasure(pathHandler.getTestSourcePath().toString(), testMetrics);
         RiskCalculator calculator = new RiskCalculator(measure, config);
@@ -179,6 +178,6 @@ public class Runner {
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
 
-        executor.executeTests();
+        Files.writeString(Path.of("tests_to_run.txt"), selector.selectTestClasses().toString());
     }
 }

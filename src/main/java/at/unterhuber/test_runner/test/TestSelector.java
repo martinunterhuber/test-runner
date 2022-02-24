@@ -5,8 +5,6 @@ import at.unterhuber.test_runner.dependency.DependencyResolver;
 import at.unterhuber.test_runner.issue.Issue;
 import at.unterhuber.test_runner.util.Config;
 import at.unterhuber.test_runner.util.FileClassLoader;
-import org.junit.platform.engine.DiscoverySelector;
-import org.junit.platform.engine.discovery.DiscoverySelectors;
 
 import java.io.IOException;
 import java.util.*;
@@ -133,23 +131,17 @@ public class TestSelector {
                 .collect(Collectors.toSet());
     }
 
-    public List<DiscoverySelector> selectTestClasses() throws IOException {
+    public List<String> selectTestClasses() throws IOException {
         System.out.println("Risky classes\n" + toLineSeparatedString(classesToTest) + "\n");
         System.out.println("Risky tests\n" + toLineSeparatedString(testClassesToRun) + "\n");
 
-        Set<DiscoverySelector> selectors = resolver
+        Set<String> selectors = resolver
                 .resolveDependenciesFor(new ArrayList<>(classesToTest))
                 .stream()
                 .filter(loader::isTestClass)
-                .map(DiscoverySelectors::selectClass)
                 .collect(Collectors.toSet());
 
-        selectors.addAll(
-                testClassesToRun
-                        .stream()
-                        .map(DiscoverySelectors::selectClass)
-                        .collect(Collectors.toSet())
-        );
+        selectors.addAll(testClassesToRun);
         System.out.println("Selected tests\n" + toLineSeparatedString(selectors) + "\n");
         return new ArrayList<>(selectors);
     }

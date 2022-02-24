@@ -7,6 +7,6 @@ First compile the project which should be tested (currently Maven and Gradle are
 * Maven: ``mvn compile test-compile dependency:copy-dependencies``
 * Gradle: ``gradle assemble compileTestJava``
 
-Then run:
+Then run the following (replace the curly braces and their content):
 
-``gradle doCustomTest --directory="{ Project Root Directory }" --packageName="{ Package Name }"``
+``./gradlew doCustomTest --directory="{ Project Root Directory }" --packageName="{ Package Name }"``

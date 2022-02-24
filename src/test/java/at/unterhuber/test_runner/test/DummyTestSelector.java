@@ -11,7 +11,7 @@ public class DummyTestSelector extends TestSelector {
     }
 
     @Override
-    public List<DiscoverySelector> selectTestClasses() {
-        return List.of(DiscoverySelectors.selectClass("at.unterhuber.test.Test2"));
+    public List<String> selectTestClasses() {
+        return List.of("at.unterhuber.test.Test2");
     }
 }
