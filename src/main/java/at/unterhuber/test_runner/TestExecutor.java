@@ -23,8 +23,10 @@ import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNa
 public class TestExecutor {
     public static void main(String[] args) throws IOException {
         String testsToRunString = Files.readString(Path.of("tests_to_run.txt"));
-        String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
-        executeTests(testsToRun);
+        if (!testsToRunString.equals("[]")) {
+            String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
+            executeTests(testsToRun);
+        }
     }
 
     public static void executeTests(String[] testsToRun) {
