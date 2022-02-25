@@ -3,7 +3,7 @@ package at.unterhuber.test_runner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class RunnerTest {
+public class ProjectAnalyzerTest {
     @Test
     public void testExecutesFailingTest_shouldThrow() {
         // Todo: fix

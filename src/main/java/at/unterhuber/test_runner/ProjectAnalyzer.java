@@ -14,7 +14,6 @@ import at.unterhuber.test_runner.metric.RiskCalculator;
 import at.unterhuber.test_runner.path.GradlePathHandler;
 import at.unterhuber.test_runner.path.MavenPathHandler;
 import at.unterhuber.test_runner.path.ProjectPathHandler;
-import at.unterhuber.test_runner.executor.TestExecutor;
 import at.unterhuber.test_runner.test.TestSelector;
 import at.unterhuber.test_runner.util.Config;
 import at.unterhuber.test_runner.util.FileClassLoader;
@@ -29,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
-public class Runner {
+public class ProjectAnalyzer {
     // TODO: add these to config?
     private static final String[] metricNames = new String[]{
             "Loc",
@@ -49,10 +48,10 @@ public class Runner {
     };
 
     public static void main(String[] args) throws Throwable {
-        String rootPath = args[0];
-        String packageName = args[1];
-        String selfRootPath = args[2];
+        analyzeProject(args[0], args[1], args[2]);
+    }
 
+    private static void analyzeProject(String rootPath, String packageName, String selfRootPath) throws IOException, InterruptedException {
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 

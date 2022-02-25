@@ -1,9 +1,5 @@
-package at.unterhuber.test_runner.executor;
+package at.unterhuber.test_runner;
 
-import at.unterhuber.test_runner.executor.TestExecutor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestExecutorTest {
