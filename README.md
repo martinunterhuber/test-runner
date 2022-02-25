@@ -6,7 +6,7 @@ TestRunner is a Java Application/GithubAction for running Junit test. It will on
 
 * **Software Metrics (CK)**: Computes the relative value of each metric compared to the maximum value inside the project. The relative values for each class are summed up.
 * **Issues (PMD)**: Finds issues in the project and rates them 1 (least important) - 5 (most important). Sums up the ratings of all issues in a class.
-* **Bugs (FindBugs)**: Finds (potential) bugs in the project and rates them 1 (least important) - 20 (most important). Sums up the ratings of all bugs in a class.
+* **Bugs (SpotBugs)**: Finds (potential) bugs in the project and rates them 1 (least important) - 20 (most important). Sums up the ratings of all bugs in a class.
 * **History (Git)**:
   * Files often changed together share their risk
   * Newer files have a higher risk
