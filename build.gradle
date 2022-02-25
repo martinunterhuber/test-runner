@@ -30,6 +30,7 @@ configurations {
     compileOnly.extendsFrom analyzeImplementation
     compileOnly.extendsFrom executeImplementation
     testImplementation.extendsFrom compileOnly
+    testRuntimeOnly.extendsFrom executeRuntimeOnly
 }
 
 dependencies {
@@ -42,9 +43,9 @@ dependencies {
     def spotbugsVersion = "4.5.3"
 
     executeImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    executeImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    executeRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
-    executeImplementation "org.junit.vintage:junit-vintage-engine:$junitVersion"
+    executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
     executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     executeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
     executeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
@@ -103,13 +104,13 @@ task doCustomTest(type: TestTask) {
                         classpath += files(it)
                     }
                 }
-                classpath += fileTree(dir: dir + "/target/classes") +
-                        fileTree(dir: dir + "/target") +
-                        fileTree(dir: dir + "/target/test-classes") +
+                classpath += files(dir + "/target/classes") +
+                        files(dir + "/target") +
+                        files(dir + "/target/test-classes") +
                         fileTree(dir: dir + "/target/dependency") +
-                        fileTree(dir: dir + "/build/classes/java/main") +
-                        fileTree(dir: dir + "/build/classes/java") +
-                        fileTree(dir: dir + "/build/classes/java/test")
+                        files(dir + "/build/classes/java/main") +
+                        files(dir + "/build/classes/java") +
+                        files(dir + "/build/classes/java/test")
                 mainClass = "at.unterhuber.test_runner.TestExecutor"
                 workingDir = dir
             }
