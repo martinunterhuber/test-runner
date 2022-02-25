@@ -1,9 +1,9 @@
 plugins {
-    id 'java'
+    id "java"
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group "org.example"
+version "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -22,62 +22,38 @@ sourceSets {
 configurations {
     analyzeImplementation.extendsFrom implementation
     executeImplementation.extendsFrom implementation
+    compileOnly.extendsFrom analyzeImplementation
+    compileOnly.extendsFrom executeImplementation
+    testImplementation.extendsFrom compileOnly
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'org.junit.platform:junit-platform-launcher:1.8.2'
-    testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    def junitVersion = "5.8.2"
+    def junitPlatformVersion = "1.8.2"
+    def slf4jVersion = "1.8.0-beta4"
+    def ckVersion = "0.7.0"
+    def pmdVersion = "6.42.0"
+    def jGraphVersion = "1.5.1"
+    def spotbugsVersion = "4.5.3"
 
-    testImplementation 'org.slf4j:slf4j-api:1.8.0-beta4'
-    testImplementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
+    executeImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    executeImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
+    executeImplementation "org.junit.vintage:junit-vintage-engine:$junitVersion"
+    executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
 
-    testImplementation 'com.github.mauricioaniche:ck:0.7.0'
-    testImplementation 'net.sourceforge.pmd:pmd-java:6.42.0'
-    testImplementation 'org.jgrapht:jgrapht-core:1.5.1'
-    testImplementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
-    testImplementation 'com.github.spotbugs:spotbugs:4.5.3'
-
-    executeImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    executeImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    executeImplementation 'org.junit.platform:junit-platform-launcher:1.8.2'
-    executeImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
-    executeImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-
-    testCompileOnly 'net.sourceforge.pmd:pmd-java:6.42.0'
-    testCompileOnly 'com.github.spotbugs:spotbugs-annotations:4.5.3'
-    testCompileOnly 'com.github.spotbugs:spotbugs:4.5.3'
-
-    compileOnly 'org.slf4j:slf4j-api:1.8.0-beta4'
-    compileOnly 'org.slf4j:slf4j-nop:1.8.0-beta4'
-
-    compileOnly 'com.github.mauricioaniche:ck:0.7.0'
-    compileOnly 'net.sourceforge.pmd:pmd-java:6.42.0'
-    compileOnly 'org.jgrapht:jgrapht-core:1.5.1'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.5.3'
-    compileOnly 'com.github.spotbugs:spotbugs:4.5.3'
-
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    compileOnly 'org.junit.platform:junit-platform-launcher:1.8.2'
-    compileOnly 'org.junit.vintage:junit-vintage-engine:5.8.2'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-
-    analyzeImplementation 'org.slf4j:slf4j-api:1.8.0-beta4'
-    analyzeImplementation 'org.slf4j:slf4j-nop:1.8.0-beta4'
-
-    analyzeImplementation 'com.github.mauricioaniche:ck:0.7.0'
-    analyzeImplementation 'net.sourceforge.pmd:pmd-java:6.42.0'
-    analyzeImplementation 'org.jgrapht:jgrapht-core:1.5.1'
-    analyzeImplementation 'com.github.spotbugs:spotbugs-annotations:4.5.3'
-    analyzeImplementation 'com.github.spotbugs:spotbugs:4.5.3'
+    analyzeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
+    analyzeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
+    analyzeImplementation "com.github.mauricioaniche:ck:$ckVersion"
+    analyzeImplementation "net.sourceforge.pmd:pmd-java:$pmdVersion"
+    analyzeImplementation "org.jgrapht:jgrapht-core:$jGraphVersion"
+    analyzeImplementation "com.github.spotbugs:spotbugs-annotations:$spotbugsVersion"
+    analyzeImplementation "com.github.spotbugs:spotbugs:$spotbugsVersion"
 }
 
 test {
-    dependsOn(':testProject:assemble')
-    dependsOn(':testProject:compileTestJava')
+    dependsOn(":testProject:assemble")
+    dependsOn(":testProject:compileTestJava")
     useJUnitPlatform()
 }
 
@@ -107,7 +83,7 @@ task doCustomTest(type: TestTask) {
             }
             javaexec {
                 classpath = sourceSets.analyze.runtimeClasspath
-                mainClass = 'at.unterhuber.test_runner.Runner'
+                mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
                 String selfDirectory = workingDir
                 workingDir = dir
                 args = [dir, packageName, selfDirectory]
@@ -120,7 +96,7 @@ task doCustomTest(type: TestTask) {
                 }
                 classpath += files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency")
                 classpath += files(dir + "/build/classes/java/main") + files(dir + "/build/classes/java") + files(dir + "/build/classes/java/test")
-                mainClass = 'at.unterhuber.test_runner.executor.TestExecutor'
+                mainClass = "at.unterhuber.test_runner.TestExecutor"
                 workingDir = dir
             }
         }
