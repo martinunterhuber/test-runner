@@ -17,6 +17,11 @@ sourceSets {
     execute {
         runtimeClasspath += sourceSets.main.runtimeClasspath
     }
+
+    test {
+        def dir = "testProject/build/classes/java"
+        runtimeClasspath += files(dir + "/main") + files(dir) + files(dir + "/test")
+    }
 }
 
 configurations {

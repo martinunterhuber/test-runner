@@ -23,14 +23,14 @@ import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNa
 
 public class TestExecutor {
     public static void main(String[] args) throws IOException {
-        executeTests();
+        String testsToRunString = Files.readString(Path.of("tests_to_run.txt"));
+        String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
+        executeTests(testsToRun);
     }
 
-    public static void executeTests() throws IOException {
-        String testsToRun = Files.readString(Path.of("tests_to_run.txt"));
-        List<ClassSelector> selectors = Arrays.stream(
-                    testsToRun.replace("[", "").replace("]", "").split(", ")
-                ).map(DiscoverySelectors::selectClass)
+    public static void executeTests(String[] testsToRun) {
+        List<ClassSelector> selectors = Arrays.stream(testsToRun)
+                .map(DiscoverySelectors::selectClass)
                 .collect(Collectors.toList());
 
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()

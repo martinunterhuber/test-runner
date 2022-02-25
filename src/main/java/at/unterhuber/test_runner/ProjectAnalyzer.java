@@ -48,10 +48,11 @@ public class ProjectAnalyzer {
     };
 
     public static void main(String[] args) throws Throwable {
-        analyzeProject(args[0], args[1], args[2]);
+        List<String> testsToRun = analyzeProject(args[0], args[1], args[2]);
+        Files.writeString(Path.of("tests_to_run.txt"), testsToRun.toString());
     }
 
-    private static void analyzeProject(String rootPath, String packageName, String selfRootPath) throws IOException, InterruptedException {
+    public static List<String> analyzeProject(String rootPath, String packageName, String selfRootPath) throws IOException, InterruptedException {
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
@@ -64,14 +65,14 @@ public class ProjectAnalyzer {
             pathHandler = new GradlePathHandler(rootPath);
         } else {
             System.out.println("Skipping " + rootPath + ": build directory is missing (did you forget to compile the program?)\n");
-            return;
+            return Collections.emptyList();
         }
         if (!pathHandler.getTestClassPath().toFile().exists()
                 || !pathHandler.getMainClassPath().toFile().exists()
                 || !pathHandler.getTestSourcePath().toFile().exists()
                 || !pathHandler.getMainSourcePath().toFile().exists()) {
             System.out.println("Skipping " + rootPath + ": project is empty\n");
-            return;
+            return Collections.emptyList();
         }
 
         Config config = new Config(pathHandler.getRootPath(), Path.of(selfRootPath));
@@ -177,6 +178,6 @@ public class ProjectAnalyzer {
         selector.determineClassesToTest(risk, issues, bugs);
         selector.determineTestsToRun(testRisk, testIssues, testBugs);
 
-        Files.writeString(Path.of("tests_to_run.txt"), selector.selectTestClasses().toString());
+        return selector.selectTestClasses();
     }
 }
