@@ -46,6 +46,8 @@ dependencies {
     executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
     executeImplementation "org.junit.vintage:junit-vintage-engine:$junitVersion"
     executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    executeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
+    executeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
 
     analyzeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
     analyzeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
@@ -97,10 +99,17 @@ task doCustomTest(type: TestTask) {
             javaexec {
                 classpath = sourceSets.execute.runtimeClasspath
                 out.toString()?.split(":")?.each {
-                    classpath += files(it)
+                    if (!it.isBlank()) {
+                        classpath += files(it)
+                    }
                 }
-                classpath += files(dir + "/target/classes") + files(dir + "/target") + files(dir + "/target/test-classes") + fileTree(dir: dir + "/target/dependency")
-                classpath += files(dir + "/build/classes/java/main") + files(dir + "/build/classes/java") + files(dir + "/build/classes/java/test")
+                classpath += fileTree(dir: dir + "/target/classes") +
+                        fileTree(dir: dir + "/target") +
+                        fileTree(dir: dir + "/target/test-classes") +
+                        fileTree(dir: dir + "/target/dependency") +
+                        fileTree(dir: dir + "/build/classes/java/main") +
+                        fileTree(dir: dir + "/build/classes/java") +
+                        fileTree(dir: dir + "/build/classes/java/test")
                 mainClass = "at.unterhuber.test_runner.TestExecutor"
                 workingDir = dir
             }

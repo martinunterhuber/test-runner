@@ -1,6 +1,5 @@
 package at.unterhuber.test_runner;
 
-import at.unterhuber.test_runner.test.TestSelector;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;

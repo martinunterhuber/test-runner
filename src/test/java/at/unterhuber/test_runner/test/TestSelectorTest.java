@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.DiscoverySelector;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 public class TestSelectorTest {
     private static Config config;
