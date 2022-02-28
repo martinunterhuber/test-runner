@@ -26,6 +26,8 @@ public class TestExecutor {
         if (!testsToRunString.equals("[]")) {
             String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
             executeTests(testsToRun);
+        } else {
+            System.out.println("No tests to run");
         }
     }
 
