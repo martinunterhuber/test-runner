@@ -15,7 +15,8 @@ public class ProjectAnalyzerTest {
                 System.getProperty("user.dir") + "/testProject",
                 "at.unterhuber.test",
                 System.getProperty("user.dir"),
-                ""
+                "",
+                System.getProperty("user.dir") + "/testProject"
         );
 
         Assertions.assertEquals(expected, testToRun);

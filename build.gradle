@@ -87,6 +87,8 @@ task doCustomTest(type: TestTask) {
             def out = new ByteArrayOutputStream()
             if (file.toString().endsWith("build.gradle")) {
                 exec {
+                    ignoreExitValue true
+                    errorOutput = OutputStream.nullOutputStream()
                     String selfDirectory = workingDir
                     workingDir "$directory"
                     commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "getRuntimeClasspath"
@@ -98,7 +100,7 @@ task doCustomTest(type: TestTask) {
                 mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
                 String selfDirectory = workingDir
                 workingDir = dir
-                args = [dir, packageName, selfDirectory, commit]
+                args = [dir, packageName, selfDirectory, commit, directory]
             }
 
             javaexec {

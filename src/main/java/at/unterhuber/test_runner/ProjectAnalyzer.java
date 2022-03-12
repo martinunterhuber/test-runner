@@ -48,30 +48,30 @@ public class ProjectAnalyzer {
     };
 
     public static void main(String[] args) throws Throwable {
-        List<String> testsToRun = analyzeProject(args[0], args[1], args[2], args[3]);
+        List<String> testsToRun = analyzeProject(args[0], args[1], args[2], args[3], args[4]);
         Files.writeString(Path.of("tests_to_run.txt"), testsToRun.toString());
     }
 
-    public static List<String> analyzeProject(String rootPath, String packageName, String selfRootPath, String commit) throws IOException, InterruptedException {
+    public static List<String> analyzeProject(String projectRoot, String packageName, String selfRootPath, String commit, String root) throws IOException, InterruptedException {
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
         ProjectPathHandler pathHandler;
-        if (Files.exists(Path.of(rootPath).resolve("target"))) {
+        if (Files.exists(Path.of(projectRoot).resolve("target"))) {
             System.out.println("Inferred Build Tool: Maven\n");
-            pathHandler = new MavenPathHandler(rootPath);
-        } else if (Files.exists(Path.of(rootPath).resolve("build"))) {
+            pathHandler = new MavenPathHandler(projectRoot);
+        } else if (Files.exists(Path.of(projectRoot).resolve("build"))) {
             System.out.println("Inferred Build Tool: Gradle\n");
-            pathHandler = new GradlePathHandler(rootPath);
+            pathHandler = new GradlePathHandler(projectRoot);
         } else {
-            System.out.println("Skipping " + rootPath + ": build directory is missing (did you forget to compile the program?)\n");
+            System.out.println("Skipping " + projectRoot + ": build directory is missing (did you forget to compile the program?)\n");
             return Collections.emptyList();
         }
         if (!pathHandler.getTestClassPath().toFile().exists()
                 || !pathHandler.getMainClassPath().toFile().exists()
                 || !pathHandler.getTestSourcePath().toFile().exists()
                 || !pathHandler.getMainSourcePath().toFile().exists()) {
-            System.out.println("Skipping " + rootPath + ": project is empty\n");
+            System.out.println("Skipping " + projectRoot + ": project is empty\n");
             return Collections.emptyList();
         }
 
@@ -92,8 +92,14 @@ public class ProjectAnalyzer {
         if (!scanAll) {
             changedFiles = GitParser.getDiffClasses(commit)
                     .stream()
+                    .map((path) -> root + "/" + path)
                     .map(pathHandler::pathToFullClassName)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
+            if (changedFiles.size() == 0) {
+                System.out.println("Skipping " + projectRoot + ": no files were changed\n");
+                return Collections.emptyList();
+            }
             System.out.println("Changed files\n" + changedFiles + "\n");
         }
 
