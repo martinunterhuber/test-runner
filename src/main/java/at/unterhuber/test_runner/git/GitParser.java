@@ -28,6 +28,22 @@ public class GitParser {
         this.log = log;
     }
 
+    public static List<String> getDiffClasses(String commit) throws IOException, InterruptedException {
+        Process process = new ProcessBuilder(
+                "git",
+                "diff",
+                "--name-only",
+                commit
+        ).redirectErrorStream(true).start();
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String result = br.lines().collect(Collectors.joining("\n"));
+        process.waitFor();
+        return Arrays
+                .stream(result.split("\n"))
+                .filter((clazz) -> clazz.endsWith(".java"))
+                .collect(Collectors.toList());
+    }
+
     private void getLog() throws InterruptedException, IOException {
         Process process = new ProcessBuilder(
                 "git",

@@ -48,11 +48,11 @@ public class ProjectAnalyzer {
     };
 
     public static void main(String[] args) throws Throwable {
-        List<String> testsToRun = analyzeProject(args[0], args[1], args[2]);
+        List<String> testsToRun = analyzeProject(args[0], args[1], args[2], args[3]);
         Files.writeString(Path.of("tests_to_run.txt"), testsToRun.toString());
     }
 
-    public static List<String> analyzeProject(String rootPath, String packageName, String selfRootPath) throws IOException, InterruptedException {
+    public static List<String> analyzeProject(String rootPath, String packageName, String selfRootPath, String commit) throws IOException, InterruptedException {
         Metric[] metrics = Arrays.stream(metricNames).map(Metric::new).toArray(Metric[]::new);
         Metric[] testMetrics = Arrays.stream(testMetricNames).map(Metric::new).toArray(Metric[]::new);
 
@@ -87,12 +87,11 @@ public class ProjectAnalyzer {
         BugsMeasure bugsMeasure = new BugsMeasure(pathHandler, loader, Priorities.NORMAL_PRIORITY);
         GitParser gitParser = new GitParser(pathHandler);
 
-        String diff = System.getenv("DIFF");
-        boolean scanAll = diff == null;
+        boolean scanAll = commit == null || commit.isBlank();
         List<String> changedFiles = new ArrayList<>();
         if (!scanAll) {
-            changedFiles = Arrays
-                    .stream(diff.split(" "))
+            changedFiles = GitParser.getDiffClasses(commit)
+                    .stream()
                     .map(pathHandler::pathToFullClassName)
                     .collect(Collectors.toList());
             System.out.println("Changed files\n" + changedFiles + "\n");

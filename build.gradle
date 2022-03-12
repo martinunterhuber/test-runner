@@ -73,6 +73,10 @@ class TestTask extends DefaultTask {
     @Input
     @Option(option = "packageName", description = "The name of the package to test")
     String packageName
+
+    @Input
+    @Option(option = "commit", description = "The commit to which the current commit will be compared in order to only include the changed(+dependant) classes/tests")
+    String commit = ""
 }
 
 
@@ -94,7 +98,7 @@ task doCustomTest(type: TestTask) {
                 mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
                 String selfDirectory = workingDir
                 workingDir = dir
-                args = [dir, packageName, selfDirectory]
+                args = [dir, packageName, selfDirectory, commit]
             }
 
             javaexec {

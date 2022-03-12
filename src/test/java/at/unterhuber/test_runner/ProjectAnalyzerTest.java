@@ -14,7 +14,8 @@ public class ProjectAnalyzerTest {
         List<String> testToRun = ProjectAnalyzer.analyzeProject(
                 System.getProperty("user.dir") + "/testProject",
                 "at.unterhuber.test",
-                System.getProperty("user.dir")
+                System.getProperty("user.dir"),
+                ""
         );
 
         Assertions.assertEquals(expected, testToRun);

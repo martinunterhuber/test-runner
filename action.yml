@@ -45,16 +45,7 @@ runs:
         branch: 'master'
         workflow_id: 'build.yml'
         github_token: ${{ inputs.github-token }}
-    - name: get diff
-      id: diff
-      run: |
-        DIFF=$(git diff --name-only ${{ steps.last_successful_commit.outputs.commit_hash }} | grep '.*.java')
-        echo 'DIFF<<EOF' >> $GITHUB_ENV
-        echo $DIFF >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-      working-directory: ./main
-      shell: bash
     - name: Execute Test Runner
-      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --packageName=${{ inputs.package-name }}
+      run: ${{ inputs.script }} --directory=${{ inputs.project-root }} --packageName=${{ inputs.package-name }} --commit=${{ steps.last_successful_commit.outputs.commit_hash }}
       shell: bash
       working-directory: ./test-runner
