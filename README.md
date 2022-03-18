@@ -19,7 +19,7 @@ TestRunner is a Java Application/GithubAction for running Junit test. It will on
 First compile the project which should be tested (currently Maven and Gradle are supported)
 
 * Maven: ``mvn compile test-compile dependency:copy-dependencies``
-* Gradle: ``gradle assemble compileTestJava``
+* Gradle: ``gradle assemble compileTestJava processResources processTestResources``
 
 Then run the following (replace the curly braces and their content):
 

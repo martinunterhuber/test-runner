@@ -47,8 +47,8 @@ dependencies {
     executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
     executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
     executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-    executeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
-    executeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
+//    executeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
+//    executeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
 
     analyzeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
     analyzeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
@@ -82,19 +82,18 @@ class TestTask extends DefaultTask {
 
 task doCustomTest(type: TestTask) {
     doFirst {
-        fileTree(dir: "$directory").filter { file -> file.toString().endsWith("pom.xml") || file.toString().endsWith("build.gradle") }.each { file ->
+        def first = true
+        fileTree(dir: "$directory").filter { file -> file.toString().endsWith("pom.xml") || file.toString().endsWith(".gradle") }.each { file ->
             def dir = file.getParent()
-            def out = new ByteArrayOutputStream()
-            if (file.toString().endsWith("build.gradle")) {
+            if (first && file.toString().endsWith(".gradle")) {
                 exec {
-                    ignoreExitValue true
                     errorOutput = OutputStream.nullOutputStream()
                     String selfDirectory = workingDir
                     workingDir "$directory"
-                    commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "getRuntimeClasspath"
-                    standardOutput = out
+                    commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "copyRuntimeLibs"
                 }
             }
+            first = false
             javaexec {
                 classpath = sourceSets.analyze.runtimeClasspath
                 mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
@@ -105,18 +104,15 @@ task doCustomTest(type: TestTask) {
 
             javaexec {
                 classpath = sourceSets.execute.runtimeClasspath
-                out.toString()?.split(":")?.each {
-                    if (!it.isBlank()) {
-                        classpath += files(it)
-                    }
-                }
                 classpath += files(dir + "/target/classes") +
                         files(dir + "/target") +
                         files(dir + "/target/test-classes") +
                         fileTree(dir: dir + "/target/dependency") +
                         files(dir + "/build/classes/java/main") +
                         files(dir + "/build/classes/java") +
-                        files(dir + "/build/classes/java/test")
+                        files(dir + "/build/classes/java/test") +
+                        files(dir + "/build/resources/test") +
+                        fileTree(dir: dir + "/build/libs")
                 mainClass = "at.unterhuber.test_runner.TestExecutor"
                 workingDir = dir
             }

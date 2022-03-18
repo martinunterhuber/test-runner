@@ -1,7 +1,16 @@
-allprojects {
-    task getRuntimeClasspath {
-        doLast {
-            println sourceSets.main.runtimeClasspath.asPath
+rootProject {
+    task copyDependencies
+    gradle.projectsEvaluated {
+        subprojects.each {
+            Project proj = it
+            if (proj.configurations.hasProperty("testRuntimeClasspath")) {
+                Task task = proj.task('copyDependencies', type: Copy) {
+                    into "build/libs"
+                    from proj.configurations.testRuntimeClasspath
+                    include "*.jar"
+                }
+                copyDependencies.dependsOn task
+            }
         }
     }
 }

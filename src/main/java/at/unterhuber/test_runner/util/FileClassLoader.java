@@ -62,7 +62,6 @@ public class FileClassLoader {
                     try {
                         return classLoader.loadClass(className);
                     } catch (NoClassDefFoundError | ClassNotFoundException e) {
-                        e.printStackTrace();
                         return null;
                     }
                 }).collect(Collectors.toList());
