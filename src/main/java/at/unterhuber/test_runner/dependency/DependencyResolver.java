@@ -60,7 +60,12 @@ public class DependencyResolver {
 
         for (String clazz : classes) {
             visited.add(clazz);
-            resolveDependenciesRecursive(clazz, visited, 0, maxDepth);
+            try {
+                resolveDependenciesRecursive(clazz, visited, 0, maxDepth);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+
         }
         System.out.println("Changed+dependent classes\n" + toLineSeparatedString(visited) + "\n");
 

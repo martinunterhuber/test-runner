@@ -10,6 +10,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -29,6 +30,10 @@ public class TestExecutor {
         } else {
             System.out.println("No tests to run");
         }
+        new File("changed_classes.txt").delete();
+        new File("tests_to_run.txt").delete();
+        new File("mycache").delete();
+        System.exit(0);
     }
 
     public static void executeTests(String[] testsToRun) {

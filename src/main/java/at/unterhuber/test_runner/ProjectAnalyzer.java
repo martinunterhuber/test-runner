@@ -96,6 +96,7 @@ public class ProjectAnalyzer {
                     .map(pathHandler::pathToFullClassName)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
+            Files.writeString(Path.of("changed_classes.txt"), changedFiles.toString());
             if (changedFiles.size() == 0) {
                 System.out.println("Skipping " + projectRoot + ": no files were changed\n");
                 return Collections.emptyList();

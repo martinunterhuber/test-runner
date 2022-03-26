@@ -2,4 +2,4 @@
 build/
 .gradle/
 testProject/mycache
-result*.txt
+results/

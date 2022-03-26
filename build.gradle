@@ -41,12 +41,21 @@ dependencies {
     def pmdVersion = "6.42.0"
     def jGraphVersion = "1.5.1"
     def spotbugsVersion = "4.5.3"
+    def pitVersion = "1.7.4"
+    def pitJunit5Version = "0.15"
 
     executeImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    executeRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
-    executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
     executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+
+    executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+    executeRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    executeImplementation "org.pitest:pitest:$pitVersion"
+    executeImplementation "org.pitest:pitest-html-report:$pitVersion"
+    executeImplementation "org.pitest:pitest-entry:$pitVersion"
+    executeImplementation "org.pitest:pitest-junit5-plugin:$pitJunit5Version"
+
 //    executeImplementation "org.slf4j:slf4j-api:$slf4jVersion"
 //    executeImplementation "org.slf4j:slf4j-nop:$slf4jVersion"
 
@@ -77,6 +86,10 @@ class TestTask extends DefaultTask {
     @Input
     @Option(option = "commit", description = "The commit to which the current commit will be compared in order to only include the changed(+dependant) classes/tests")
     String commit = ""
+
+    @Input
+    @Option(option = "mutation", description = "Execute mutation tests (mainly used for verfiying usefulness of the tool)")
+    boolean mutation
 }
 
 
@@ -85,12 +98,13 @@ task doCustomTest(type: TestTask) {
         def first = true
         fileTree(dir: "$directory").filter { file -> file.toString().endsWith("pom.xml") || file.toString().endsWith(".gradle") }.each { file ->
             def dir = file.getParent()
+            def executorClass = mutation ? "MutationTestExecutor" : "TestExecutor"
             if (first && file.toString().endsWith(".gradle")) {
                 exec {
-                    errorOutput = OutputStream.nullOutputStream()
+                    ignoreExitValue true
                     String selfDirectory = workingDir
                     workingDir "$directory"
-                    commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "copyRuntimeLibs"
+                    commandLine "./gradlew", "-I", "$selfDirectory/init.gradle", "-q", "copyDependencies"
                 }
             }
             first = false
@@ -112,9 +126,11 @@ task doCustomTest(type: TestTask) {
                         files(dir + "/build/classes/java") +
                         files(dir + "/build/classes/java/test") +
                         files(dir + "/build/resources/test") +
+                        files(dir + "/build/resources/main") +
                         fileTree(dir: dir + "/build/libs")
-                mainClass = "at.unterhuber.test_runner.TestExecutor"
+                mainClass = "at.unterhuber.test_runner.$executorClass"
                 workingDir = dir
+                // todo: fix sometimes not terminating
             }
         }
     }

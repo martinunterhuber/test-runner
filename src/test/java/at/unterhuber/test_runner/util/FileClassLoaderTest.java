@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FileClassLoaderTest {
-    private static String ROOT = System.getProperty("user.dir") + "/testProject";
+    private static final String ROOT = System.getProperty("user.dir") + "/testProject";
     private FileClassLoader classLoader;
 
     @BeforeEach

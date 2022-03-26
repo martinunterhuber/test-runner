@@ -67,6 +67,10 @@ public class FileClassLoader {
                 }).collect(Collectors.toList());
     }
 
+    public List<? extends Class<?>> getTestClasses() {
+        return testClasses;
+    }
+
     public Set<String> getTestClassesNames() {
         return testClassesNames;
     }
