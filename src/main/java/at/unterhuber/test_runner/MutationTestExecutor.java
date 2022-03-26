@@ -30,8 +30,8 @@ public class MutationTestExecutor {
         } else {
             System.out.println("No tests to run");
         }
-        new File("changed_classes.txt").delete();
-        new File("tests_to_run.txt").delete();
+//        new File("changed_classes.txt").delete();
+//        new File("tests_to_run.txt").delete();
         new File("mycache").delete();
         System.exit(0);
     }
