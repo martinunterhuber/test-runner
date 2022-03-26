@@ -90,6 +90,10 @@ class TestTask extends DefaultTask {
     @Input
     @Option(option = "mutation", description = "Execute mutation tests (mainly used for verfiying usefulness of the tool)")
     boolean mutation
+
+    @Input
+    @Option(option = "runAll", description = "The tool will execute all tests (mainly used for verfiying usefulness of the tool)")
+    boolean runAll
 }
 
 
@@ -108,12 +112,14 @@ task doCustomTest(type: TestTask) {
                 }
             }
             first = false
-            javaexec {
-                classpath = sourceSets.analyze.runtimeClasspath
-                mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
-                String selfDirectory = workingDir
-                workingDir = dir
-                args = [dir, packageName, selfDirectory, commit, directory]
+            if (!runAll) {
+                javaexec {
+                    classpath = sourceSets.analyze.runtimeClasspath
+                    mainClass = "at.unterhuber.test_runner.ProjectAnalyzer"
+                    String selfDirectory = workingDir
+                    workingDir = dir
+                    args = [dir, packageName, selfDirectory, commit, directory]
+                }
             }
 
             javaexec {
@@ -130,6 +136,7 @@ task doCustomTest(type: TestTask) {
                         fileTree(dir: dir + "/build/libs")
                 mainClass = "at.unterhuber.test_runner.$executorClass"
                 workingDir = dir
+                args = [runAll, packageName]
                 // todo: fix sometimes not terminating
             }
         }

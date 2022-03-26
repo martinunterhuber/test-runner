@@ -14,16 +14,19 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MutationTestExecutor {
     public static void main(String[] args) throws IOException {
+        boolean runAll = Boolean.parseBoolean(args[0]);
+        String packageName = args[1];
         String testsToRunString = Files.readString(Path.of("tests_to_run.txt"));
         String changedClassesString = Files.readString(Path.of("changed_classes.txt"));
         if (!testsToRunString.equals("[]")) {
             String[] changedClasses = changedClassesString.replace("[", "").replace("]", "").split(", ");
             String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
-            executeTests(testsToRun, changedClasses, System.getProperty("user.dir"));
+            executeTests(testsToRun, changedClasses, System.getProperty("user.dir"), runAll, packageName);
         } else {
             System.out.println("No tests to run");
         }
@@ -33,9 +36,8 @@ public class MutationTestExecutor {
         System.exit(0);
     }
 
-    public static void executeTests(String[] testsToRun, String[] changedClasses, String rootDirectory) throws IOException {
-        List<String> classes = Arrays.stream(testsToRun).collect(Collectors.toList());
-        classes.addAll(Arrays.stream(changedClasses).collect(Collectors.toList()));
+    public static void executeTests(String[] testsToRun, String[] changedClasses, String rootDirectory, boolean runAll, String packageName) throws IOException {
+        List<String> classes = Arrays.stream(changedClasses).collect(Collectors.toList());
         FileClassLoader classLoader = new FileClassLoader(new MavenPathHandler("/home/martin/commons-cli"));
         classLoader.initClassLoader();
         classLoader.loadTestClasses();
@@ -45,6 +47,12 @@ public class MutationTestExecutor {
         options.setSourceDirs(List.of(new File(rootDirectory + "/src")));
         options.addOutputFormats(List.of("HTML"));
         options.setTimeoutConstant(1000L);
+        if (runAll) {
+            Set<String> testClassesNames = classLoader.getTestClassesNames();
+            classes.addAll(testClassesNames);
+        } else {
+            classes.addAll(Arrays.stream(testsToRun).collect(Collectors.toList()));
+        }
         options.setTargetClasses(classes);
         PluginServices pluginServices = new PluginServices(classLoader.getClassLoader());
         new EntryPoint().execute(new File(rootDirectory), options, pluginServices, Map.of());
