@@ -6,6 +6,11 @@ GRADLE=$(ls $DIRECTORY | grep "build.gradle" -c)
 RUNNER=$(pwd)
 MAX=100
 
+if [ ! -e $RUNNER/results/$NAME ]
+then
+  mkdir $RUNNER/results/$NAME
+fi
+
 cd $DIRECTORY
 git clean -f
 git reset HEAD --hard
