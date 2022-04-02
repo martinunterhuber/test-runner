@@ -38,7 +38,7 @@ public class MutationTestExecutor {
 
     public static void executeTests(String[] testsToRun, String[] changedClasses, String rootDirectory, boolean runAll, String packageName) throws IOException {
         List<String> classes = Arrays.stream(changedClasses).collect(Collectors.toList());
-        FileClassLoader classLoader = new FileClassLoader(new MavenPathHandler("/home/martin/commons-cli"));
+        FileClassLoader classLoader = new FileClassLoader(new MavenPathHandler(rootDirectory));
         classLoader.initClassLoader();
         classLoader.loadTestClasses();
         ReportOptions options = new ReportOptions();

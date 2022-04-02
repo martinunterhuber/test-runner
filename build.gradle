@@ -48,7 +48,7 @@ dependencies {
     executeImplementation "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
     executeImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
 
-    executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+//    executeRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
     executeRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
     executeImplementation "org.pitest:pitest:$pitVersion"

@@ -30,7 +30,7 @@ do
     then
       ./gradlew assemble compileTestJava processResources processTestResources > $RESULT/compile.txt 2>&1
     else
-      mvn clean compile test-compile dependency:copy-dependencies > $RESULT/compile.txt 2>&1
+      ./mvnw clean compile test-compile dependency:copy-dependencies > $RESULT/compile.txt 2>&1
     fi
 
     cd $RUNNER
@@ -43,7 +43,7 @@ do
     then
       ./gradlew test > $RESULT/all.txt 2>&1
     else
-      mvn test > $RESULT/all.txt 2>&1
+      ./mvnw test > $RESULT/all.txt 2>&1
     fi
   fi
   git checkout HEAD^
