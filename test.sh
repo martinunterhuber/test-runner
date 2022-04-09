@@ -44,15 +44,15 @@ do
     ./gradlew doCustomTest --directory=$DIRECTORY --packageName=$PACKAGE --commit="HEAD^" --mutation --runAll > $RESULT/mutation_all.txt 2>&1
 
     cd $DIRECTORY
-    if [ $GRADLE -eq 1 ]
-    then
-      ./gradlew test > $RESULT/all.txt 2>&1
-    elif [ $MWN_WRAPPER -gt 1 ]
-    then
-      ./mvnw test > $RESULT/all.txt 2>&1
-    else
-      mvn test > $RESULT/all.txt 2>&1
-    fi
+#    if [ $GRADLE -eq 1 ]
+#    then
+#      ./gradlew test > $RESULT/all.txt 2>&1
+#    elif [ $MWN_WRAPPER -gt 1 ]
+#    then
+#      ./mvnw test > $RESULT/all.txt 2>&1
+#    else
+#      mvn test > $RESULT/all.txt 2>&1
+#    fi
   fi
   git checkout HEAD^
 done
