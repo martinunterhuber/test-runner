@@ -22,8 +22,8 @@ public class MutationTestExecutor {
         boolean runAll = Boolean.parseBoolean(args[0]);
         String packageName = args[1];
         String testsToRunString = Files.readString(Path.of("tests_to_run.txt"));
-        String changedClassesString = Files.readString(Path.of("changed_classes.txt"));
         if (!testsToRunString.equals("[]")) {
+            String changedClassesString = Files.readString(Path.of("changed_classes.txt"));
             String[] changedClasses = changedClassesString.replace("[", "").replace("]", "").split(", ");
             String[] testsToRun = testsToRunString.replace("[", "").replace("]", "").split(", ");
             executeTests(testsToRun, changedClasses, System.getProperty("user.dir"), runAll, packageName);

@@ -3,6 +3,7 @@
 
 export JAVA_HOME=/usr/lib/jvm/java-$JAVA-openjdk-amd64
 GRADLE=$(ls $DIRECTORY | grep "build.gradle" -c)
+MWN_WRAPPER=$(ls $DIRECTORY | grep "mvnw" -c)
 RUNNER=$(pwd)
 MAX=100
 
@@ -15,6 +16,7 @@ cd $DIRECTORY
 git clean -f
 git reset HEAD --hard
 git checkout master
+git checkout main
 for (( i=0; i < $MAX; ++i ))
 do
   cd $DIRECTORY
@@ -28,9 +30,12 @@ do
 
     if [ $GRADLE -eq 1 ]
     then
-      ./gradlew assemble compileTestJava processResources processTestResources > $RESULT/compile.txt 2>&1
+      ./gradlew clean assemble compileTestJava processResources processTestResources > $RESULT/compile.txt 2>&1
+    elif [ $MWN_WRAPPER -gt 1 ]
+    then
+      ./mvnw clean test-compile package -DskipTests dependency:copy-dependencies > $RESULT/compile.txt 2>&1
     else
-      ./mvnw clean compile test-compile dependency:copy-dependencies > $RESULT/compile.txt 2>&1
+      mvn clean test-compile package -DskipTests dependency:copy-dependencies > $RESULT/compile.txt 2>&1
     fi
 
     cd $RUNNER
@@ -42,8 +47,11 @@ do
     if [ $GRADLE -eq 1 ]
     then
       ./gradlew test > $RESULT/all.txt 2>&1
-    else
+    elif [ $MWN_WRAPPER -gt 1 ]
+    then
       ./mvnw test > $RESULT/all.txt 2>&1
+    else
+      mvn test > $RESULT/all.txt 2>&1
     fi
   fi
   git checkout HEAD^

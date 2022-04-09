@@ -38,6 +38,9 @@ public class DependencyResolver {
         while (!toVisit.isEmpty()) {
             String current = toVisit.remove();
             visited.add(current);
+            if (!dependencyGraph.containsVertex(current)) {
+                continue;
+            }
             for (DefaultEdge edge : dependencyGraph.outgoingEdgesOf(current)) {
                 String target = dependencyGraph.getEdgeTarget(edge);
                 if (!visited.contains(target)) {
@@ -74,6 +77,9 @@ public class DependencyResolver {
 
     private void resolveDependenciesRecursive(String clazz, Set<String> visited, int depth, int maxDepth) {
         if (maxDepth <= depth) {
+            return;
+        }
+        if (!dependencyGraph.containsVertex(clazz)) {
             return;
         }
         for (DefaultEdge edge : dependencyGraph.outgoingEdgesOf(clazz)) {
