@@ -5,7 +5,7 @@ export JAVA_HOME=/usr/lib/jvm/java-$JAVA-openjdk-amd64
 GRADLE=$(ls $DIRECTORY | grep "build.gradle" -c)
 MWN_WRAPPER=$(ls $DIRECTORY | grep "mvnw" -c)
 RUNNER=$(pwd)
-MAX=100
+MAX=200
 
 if [ ! -e $RUNNER/results/$NAME ]
 then

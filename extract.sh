@@ -15,7 +15,20 @@ do
       continue
     fi
     cd $subdirname
-    cat reduced.txt | grep -P -o "[0-9]+(?= tests started)" > results2.txt
+    k=$(cat reduced.txt | grep -P -o "[0-9]+(?= tests started)")
+    if [[ $(grep " 0 tests found" reduced.txt) && $(echo $dirname | grep "codec") ]]; then
+      echo "$subdirname"
+      x=$(sed -n '/^Selected tests$/, /^]$/p' reduced.txt | tr '\n' ',' | xargs)
+      x=${x#"Selected tests,[, "}
+      x=${x%",],"}
+      echo "$x"
+      cd /home/martin/commons-codec
+      if [[ $x ]]; then
+        k=$(mvn -Dtest="$x" test | grep -A 2 "Results:" | grep -P -o "(?<=Tests run: )[0-9]+")
+      fi
+      cd $subdirname
+    fi
+    echo $k > results2.txt
     cat mutation.txt | grep -B 1 -A 5 "Statistics" | grep -P -o "[0-9]+(?=%)" | tr '\n' ' ' | xargs -n3 > results3.txt
     cat mutation_all.txt | grep -B 1 -A 5 "Statistics" | grep -P -o "[0-9]+(?=%)" | tr '\n' ' ' | xargs -n3 > results4.txt
     count=$(wc -l < results2.txt)
