@@ -1,6 +1,9 @@
-name: 'Test Runner'
-description: 'todo'
+name: 'Risk Test Runner'
+description: 'An automatic tool for running tests using the risk-based testing approach'
 author: 'Martin Unterhuber'
+branding:
+  icon: 'check'
+  color: 'green'
 inputs:
   project-root:
     description: 'Project Root'
